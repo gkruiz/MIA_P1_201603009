@@ -1,0 +1,13 @@
+digraph G {
+subgraph cluster_frontend {
+"node1" [
+label = "{MBR|{{Nombre:| mbr_tamano | mbr_fecha_creacion |mbr_disk_signature| disk_fit}|{Valor:|30888|2021/6/7-1:19:7|37664|f
+}}}"shape = "record"];
+"node2" [label = "{PARTITION|{{Nombre:| part_name | part_status | part_type |part_fit| part_start|part_size}|{Valor:|particion1|1|p|b|0|15360
+}}}"shape = "record"];
+"node3" [label = "{PARTITION|{{Nombre:| part_name | part_status | part_type |part_fit| part_start|part_size}|{Valor:|particion2|1|p|b|15360|15360
+}}}"shape = "record"];
+"node4" [label = "{PARTITION|{{Nombre:| part_name | part_status | part_type |part_fit| part_start|part_size}|{Valor:|||||-1|0
+}}}"shape = "record"];
+"node5" [label = "{PARTITION|{{Nombre:| part_name | part_status | part_type |part_fit| part_start|part_size}|{Valor:|||||-1|0
+}}}"shape = "record"];}}
