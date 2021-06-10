@@ -102,7 +102,7 @@ time_t i_atime=-1;
 time_t i_ctime=-1;
 time_t i_mtime=-1;
 int i_block[15]={0};
-char i_type=-1;
+char i_type=-1;     ///1 es carpeta 2 es archivo , pedia 0 y 1 , pero para distinguir si vacio o nulo
 int i_perm=-1;
 
 

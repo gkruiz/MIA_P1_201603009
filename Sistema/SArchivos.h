@@ -217,7 +217,7 @@ void Formateo(char *nomarchivo,int N ,PARTITION particion,MBR tempoMBR,int tipof
     primero.i_atime=0;  ///fecha de ultima lectura
     primero.i_ctime=now;///fecha creacion
     primero.i_block[0]=superBloque.s_block_start;///Primer apuntador va al primer bloque
-    primero.i_type=0;///es una carpeta
+    primero.i_type=1;///es una carpeta
     primero.i_perm=0;///Permisos
 
 
@@ -256,7 +256,7 @@ void Formateo(char *nomarchivo,int N ,PARTITION particion,MBR tempoMBR,int tipof
     archi.i_atime=0;    ///fecha de ultima lectura
     archi.i_ctime=now;  ///fecha creacion
     archi.i_block[0]=superBloque.s_block_start+sizeof(BloqueArchivo);     ///van los apuntadores
-    archi.i_type=1;     ///es un archivo
+    archi.i_type=2;     ///es un archivo
     archi.i_perm=0;     ///Permisos
 
 
