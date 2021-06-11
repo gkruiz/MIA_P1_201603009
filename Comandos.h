@@ -90,3 +90,11 @@ struct Login{
 
 
 
+
+
+struct Mkdir{
+    char * path=0;
+    char p=0;
+};
+
+

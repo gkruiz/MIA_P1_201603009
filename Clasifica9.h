@@ -8,6 +8,12 @@ void RMELIMINA(RMD info);
 vector <string> RutatoReal(char* ruta);
 void MKcrea(MKD info);
 void CMkfs(Mkfs info);
+void Wfolder(Mkdir info);
+
+
+
+
+
 
 
 DiskMount RetMount(char * id);
@@ -62,6 +68,11 @@ void ClaComando(int com){
         case 9:
         ///MKFS
         LoginSA(info9);
+
+        break;
+        case 10:
+        ///MKFS
+        Wfolder(info10);
 
         break;
         case 20:

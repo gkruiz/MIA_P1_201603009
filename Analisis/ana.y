@@ -218,7 +218,7 @@ COMD: MKDISK parametros1{
 	comando=7;
 }
 |MKDIR 		parametros21{
-	comando=7;
+	ClaComando(10);
 }
 |CP 		parametros22{
 	comando=7;
@@ -521,13 +521,13 @@ parametros21:parametros21 parametro21
 |parametro21;
 
 parametro21:PATH IGUAL RUTA1{
-
+	info10.path=$3;
 }
 |PATH IGUAL RUTA2{
-
+	info10.path=$3;
 }
 |P{
-
+	info10.p=1;
 }
 ;
 

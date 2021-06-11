@@ -1,20 +1,24 @@
 
 
-int recorridoBloque(ifstream archivo ,int direccion, vector <char *> valores );
-int recorridoBloqueIndirecto(ifstream archivo ,int direccion, vector <char *> valores );
-int recorridoInodo(ifstream archivo ,int direccion, vector <char *> valores );
-void BusquedaRuta(PARTITION particion , SB superb, char * nombrearchivo);
+int recorridoBloque(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla,int * bdir );
+int recorridoBloqueIndirecto(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla,int * bdir );
+int recorridoInodo(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla,int * bdir );
+int BusquedaRuta(PARTITION particion , char * nombrearchivo ,char * ruta);
 
 
 
-void Wfolder(Login info){
+void Wfolder(Mkdir info){
 
-    char * usuario=info.usuario;
-    char * password=info.password;
-    char * id=info.id;
+
+
 
     ///Verifica que SI exista una sesion abierta
     if(longitud(logueada.id)!=0){
+
+    char * usuario=logueada.usuario;
+    char * password=logueada.password;
+    char * id=logueada.id;
+
         DiskMount infoP=RetMount(id);
         ///verifica que exista la particio montada
         if(infoP.let!=0){
@@ -26,20 +30,8 @@ void Wfolder(Login info){
 
                 if(superbloque.s_block_start!=-1){
                     ///Inicio obtiene datos de usuarios y grupos
-                    int posiciont=sizeof(MBR)+pmontar.part_start+superbloque.s_block_start+sizeof(BloqueArchivo);
-                    char * infoUsuarios=obtUsuarios(posiciont , infoP.path);
-                    cout<<"SALE::::"<<infoUsuarios<<endl;
-                    vector<char *> valores = splitC(infoUsuarios,'$');
-                    vector<char *> usus=splitC(valores[1],',');
-                    ///fin obtien datos de usuarios y grupos
 
-                    if(Compare(usus[3],usuario)&&Compare(usus[4],password)){
-                        cout<<"Usuario valido"<<endl;
-                        logueada=info9;
-                    }else{
-                        cout<<"Informacion NO_valida"<<endl;
-                    }
-
+                    int regre= BusquedaRuta(pmontar,infoP.path,info.path);
                 }else{
                     cout<<"La particion no esta formateada con ningun sistema de archivos"<<endl;
 
@@ -65,16 +57,38 @@ void Wfolder(Login info){
 
 
 
-void BusquedaRuta(PARTITION particion , SB superb, char * nombrearchivo){
+int BusquedaRuta(PARTITION particion ,char * nombrearchivo,char * ruta){
 
     char *nomarchivo=RPfd(nombrearchivo);
     SB superbloque;
+    vector <char *> carpe=splitC(ruta,'/');
+    int * bdireccion=(int *)malloc(sizeof(int));
+    (*bdireccion)=0;
+
+
+    int retorna=-2;
+
 
     ifstream input_file(nomarchivo, ios::binary);
         if(input_file){
             input_file.seekg(particion.part_start+sizeof(MBR));
-
+            ///carga el superbloque
             input_file.read((char*)&superbloque, sizeof(superbloque));
+
+                ///valida que exista sistema de archivos
+                if(superbloque.s_block_start!=-1){
+                    int posiciont=sizeof(MBR)+particion.part_start+superbloque.s_inode_start;
+                    int dezplaza=sizeof(MBR)+particion.part_start;
+                    retorna=recorridoInodo(input_file , posiciont , &carpe , dezplaza , bdireccion);
+                    cout<<retorna<<endl;
+                    for(int i=0;i<(carpe.size());i++){
+                        cout<<carpe[i]<<endl;
+                    }
+                    cout<<(*bdireccion)<<endl;
+                }else{
+                    cout<<"La particion no esta formateada con ningun sistema de archivos"<<endl;
+                }
+
 
         }else{
             cout<<"El disco no exite en la ruta almacenada del montaje"<<endl;
@@ -83,7 +97,7 @@ void BusquedaRuta(PARTITION particion , SB superb, char * nombrearchivo){
 
     input_file.close();
 
-
+    return retorna;
 }
 
 
@@ -93,15 +107,20 @@ void BusquedaRuta(PARTITION particion , SB superb, char * nombrearchivo){
 
 ///busca de moento solo carpeta ruta
 ///finaliza con un inodo
-int recorridoInodo(ifstream archivo ,int direccion, vector <char *> valores ){
+///archivo para usar
+///direccion es donde leera el  nuevo inodo
+///valores lista de nombres de la ruta
+///dezpla desplazamiento relativo a la particion
+///bdir direccion del ultimo bloque leido
+int recorridoInodo(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla ,int * bdir ){
     ///-2 significa error, -x si encontro , +x ahi nomas se quedo
     int retorna=-2;
 
-    if(valores.size()>0){
+    if((*valores).size()>0){
         inodo temp;
 
-        input_file.seekg(direccion);
-        input_file.read((char*)&temp, sizeof(inodo));
+        archivo.seekg(direccion);
+        archivo.read((char*)&temp, sizeof(inodo));
 
         ///sirve para ver si el inodo se leyo bien
         if((temp.i_type==1||temp.i_type==2)){
@@ -112,7 +131,8 @@ int recorridoInodo(ifstream archivo ,int direccion, vector <char *> valores ){
                 for(int i=0;i<12;i++){
                     if(temp.i_block[i]!=0){
                     ///existe un apuntador bloque a carpeta o archivo
-                        retorna=recorridoBloque(archivo,temp.i_block[i],valores);
+                    int posiciont=dezpla+temp.i_block[i];
+                        retorna=recorridoBloque(archivo,posiciont,valores,dezpla,bdir);
 
                         if(retorna!=-2){
 
@@ -129,7 +149,8 @@ int recorridoInodo(ifstream archivo ,int direccion, vector <char *> valores ){
 
                 ///apundador simple
                 if((retorna==-2)&&(temp.i_block[12]!=0)){
-                    retorna=recorridoBloqueIndirecto(archivo,temp.i_block[i],valores);
+                    int posiciont=dezpla+temp.i_block[12] ;
+                    retorna=recorridoBloqueIndirecto(archivo, posiciont ,valores,dezpla,bdir);
                 }
 
 
@@ -140,12 +161,13 @@ int recorridoInodo(ifstream archivo ,int direccion, vector <char *> valores ){
                 if((retorna==-2)&&(temp.i_block[13]!=0)){
                     BloqueApuntador tempx;
 
-                    input_file.seekg(temp.i_block[13]);
-                    input_file.read((char*)&tempx, sizeof(BloqueApuntador));
+                    archivo.seekg(temp.i_block[13]);
+                    archivo.read((char*)&tempx, sizeof(BloqueApuntador));
 
                     for(int i=0;i<16;i++){
-                        if(tempx.i_block[i]!=0){
-                            retorna=recorridoBloqueIndirecto(archivo,tempx.i_block[i],valores);
+                        if(tempx.b_pointers[i]!=0){
+                            int posiciont=dezpla+tempx.b_pointers[i] ;
+                            retorna=recorridoBloqueIndirecto(archivo, posiciont ,valores,dezpla,bdir);
                             if(retorna!=-2){
                                 break;
                             }
@@ -162,20 +184,21 @@ int recorridoInodo(ifstream archivo ,int direccion, vector <char *> valores ){
 
                     BloqueApuntador tempx;
 
-                    input_file.seekg(temp.i_block[14]);
-                    input_file.read((char*)&tempx, sizeof(BloqueApuntador));
+                    archivo.seekg(temp.i_block[14]);
+                    archivo.read((char*)&tempx, sizeof(BloqueApuntador));
 
                     for(int i=0;i<16;i++){
-                        if(tempx.i_block[i]!=0){
+                        if(tempx.b_pointers[i]!=0){
                             BloqueApuntador tempx2;
 
-                            input_file.seekg(tempx.i_block[i]);
-                            input_file.read((char*)&tempx2, sizeof(BloqueApuntador));
+                            archivo.seekg(tempx.b_pointers[i]);
+                            archivo.read((char*)&tempx2, sizeof(BloqueApuntador));
 
 
                             for(int j=0;j<16;j++){
-                                if(tempx2.i_block[j]!=0){
-                                    retorna=recorridoBloqueIndirecto(archivo,tempx2.i_block[j],valores);
+                                if(tempx2.b_pointers[j]!=0){
+                                    int posiciont=dezpla+tempx2.b_pointers[j] ;
+                                    retorna=recorridoBloqueIndirecto(archivo, posiciont ,valores,dezpla,bdir);
                                     if(retorna!=-2){
                                         break;
                                     }
@@ -225,23 +248,24 @@ int recorridoInodo(ifstream archivo ,int direccion, vector <char *> valores ){
 
 ///verificar si todos vacios eliminar direccion
 ///en apuntadores varios 1 2 3
-int recorridoBloqueIndirecto(ifstream archivo ,int direccion, vector <char *> valores ){
+int recorridoBloqueIndirecto(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla ,int * bdir ){
 
 
     int retorna=-2;
 
-    if(valores.size()>0){
+    if((*valores).size()>0){
         BloqueApuntador temp;
 
-        input_file.seekg(direccion);
-        input_file.read((char*)&temp, sizeof(BloqueApuntador));
+        archivo.seekg(direccion);
+        archivo.read((char*)&temp, sizeof(BloqueApuntador));
 
 
                 ///inicia a ver si conincide el nombre y la ruta
                 for(int i=0;i<16;i++){
 
                     if(temp.b_pointers[i]!=0){
-                        retorna=recorridoBloque(archivo,temp.b_pointers[i],valores);
+                        int posiciont=dezpla+temp.b_pointers[i] ;
+                        retorna=recorridoBloque(archivo,posiciont,valores,dezpla,bdir);
 
                         if(retorna!=-2){
 
@@ -264,37 +288,35 @@ int recorridoBloqueIndirecto(ifstream archivo ,int direccion, vector <char *> va
 
 
 
-
-
-
-
-
-
-
-int recorridoBloque(ifstream archivo ,int direccion, vector <char *> valores ){
+int recorridoBloque(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla ,int * bdir ){
 
 
     int retorna=-2;
 
-    if(valores.size()>0){
+    if((*valores).size()>0){
         BloqueCarpeta temp;
 
-        input_file.seekg(direccion);
-        input_file.read((char*)&temp, sizeof(BloqueCarpeta));
+        archivo.seekg(direccion);
+        archivo.read((char*)&temp, sizeof(BloqueCarpeta));
 
         ///sirve para ver si el bloque se leyo bien
-        if((temp.b_content[0]!=0)||(temp.b_content[1]!=0)||(temp.b_content[2]!=0)||(temp.b_content[3]!=0)){
+        if((temp.b_content[0].b_inodo!=-1)||(temp.b_content[1].b_inodo!=-1)||(temp.b_content[2].b_inodo!=-1)||(temp.b_content[3].b_inodo!=-1)){
+
 
                 ///inicia a ver si conincide el nombre y la ruta
                 for(int i=0;i<4;i++){
-                    if(temp.b_content[i]!=0){
+                    if(temp.b_content[i].b_inodo!=-1){
                         ///obtiene el nombre guardado en el bloque
                         char * nombenB=ArrtoCharP(temp.b_content[i].b_name);
-                        if(Compare(nombenB,valores[0])){
+                        if(Compare(nombenB,(*valores)[0])){
+                            ///guarda la ultima direccion del bloque leido
+                            (*bdir)=direccion;
                             ///parte de la ruta coincidio
-                            vector<char *> cambVal=valores;
-                            cambVal.pop_front();
-                            retorna=recorridoInodo(archivo ,temp.b_content[i].b_inodo,cambVal)
+                            vector<char *> cambVal=(*valores);
+                            pop_front(cambVal);
+                            (*valores)=cambVal;
+                            int posiciont=dezpla+temp.b_content[i].b_inodo ;
+                            retorna=recorridoInodo(archivo ,posiciont, valores ,dezpla,bdir);
                             break;
                         }
 

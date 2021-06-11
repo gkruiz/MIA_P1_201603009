@@ -80,7 +80,7 @@ extern int linea;
 extern FILE *yyin;
 void yyerror (  char const *s);
 
-#line 84 "y.tab.cpp"
+#line 84 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -200,7 +200,7 @@ union YYSTYPE
 char* cadena;
 float real;
 
-#line 204 "y.tab.cpp"
+#line 204 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -1703,7 +1703,7 @@ yyreduce:
                         {
 	ClaComando(1);
 }
-#line 1707 "y.tab.cpp"
+#line 1707 "y.tab.c"
     break;
 
   case 6:
@@ -1711,7 +1711,7 @@ yyreduce:
                            {
 	ClaComando(2);
 }
-#line 1715 "y.tab.cpp"
+#line 1715 "y.tab.c"
     break;
 
   case 7:
@@ -1719,7 +1719,7 @@ yyreduce:
                            {
 	ClaComando(3);
 }
-#line 1723 "y.tab.cpp"
+#line 1723 "y.tab.c"
     break;
 
   case 8:
@@ -1727,7 +1727,7 @@ yyreduce:
                            {
 	ClaComando(4);
 }
-#line 1731 "y.tab.cpp"
+#line 1731 "y.tab.c"
     break;
 
   case 9:
@@ -1735,7 +1735,7 @@ yyreduce:
                            {
 	ClaComando(5);
 }
-#line 1739 "y.tab.cpp"
+#line 1739 "y.tab.c"
     break;
 
   case 10:
@@ -1743,7 +1743,7 @@ yyreduce:
                            {
 	ClaComando(6);
 }
-#line 1747 "y.tab.cpp"
+#line 1747 "y.tab.c"
     break;
 
   case 11:
@@ -1751,7 +1751,7 @@ yyreduce:
                            {
 	ClaComando(7);
 }
-#line 1755 "y.tab.cpp"
+#line 1755 "y.tab.c"
     break;
 
   case 12:
@@ -1759,7 +1759,7 @@ yyreduce:
                            {
 	ClaComando(8);
 }
-#line 1763 "y.tab.cpp"
+#line 1763 "y.tab.c"
     break;
 
   case 13:
@@ -1767,7 +1767,7 @@ yyreduce:
                            {
 	ClaComando(9);
 }
-#line 1771 "y.tab.cpp"
+#line 1771 "y.tab.c"
     break;
 
   case 14:
@@ -1776,7 +1776,7 @@ yyreduce:
 	Login borra;
 	logueada=borra;
 }
-#line 1780 "y.tab.cpp"
+#line 1780 "y.tab.c"
     break;
 
   case 15:
@@ -1784,7 +1784,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1788 "y.tab.cpp"
+#line 1788 "y.tab.c"
     break;
 
   case 16:
@@ -1792,7 +1792,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1796 "y.tab.cpp"
+#line 1796 "y.tab.c"
     break;
 
   case 17:
@@ -1800,7 +1800,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1804 "y.tab.cpp"
+#line 1804 "y.tab.c"
     break;
 
   case 18:
@@ -1808,7 +1808,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1812 "y.tab.cpp"
+#line 1812 "y.tab.c"
     break;
 
   case 19:
@@ -1816,7 +1816,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1820 "y.tab.cpp"
+#line 1820 "y.tab.c"
     break;
 
   case 20:
@@ -1824,7 +1824,7 @@ yyreduce:
                             {
 	comando=8;
 }
-#line 1828 "y.tab.cpp"
+#line 1828 "y.tab.c"
     break;
 
   case 21:
@@ -1832,7 +1832,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1836 "y.tab.cpp"
+#line 1836 "y.tab.c"
     break;
 
   case 22:
@@ -1840,7 +1840,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1844 "y.tab.cpp"
+#line 1844 "y.tab.c"
     break;
 
   case 23:
@@ -1848,7 +1848,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1852 "y.tab.cpp"
+#line 1852 "y.tab.c"
     break;
 
   case 24:
@@ -1856,15 +1856,15 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1860 "y.tab.cpp"
+#line 1860 "y.tab.c"
     break;
 
   case 25:
 #line 220 "ana.y"
                             {
-	comando=7;
+	ClaComando(10);
 }
-#line 1868 "y.tab.cpp"
+#line 1868 "y.tab.c"
     break;
 
   case 26:
@@ -1872,7 +1872,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1876 "y.tab.cpp"
+#line 1876 "y.tab.c"
     break;
 
   case 27:
@@ -1880,7 +1880,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1884 "y.tab.cpp"
+#line 1884 "y.tab.c"
     break;
 
   case 28:
@@ -1888,7 +1888,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1892 "y.tab.cpp"
+#line 1892 "y.tab.c"
     break;
 
   case 29:
@@ -1896,7 +1896,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1900 "y.tab.cpp"
+#line 1900 "y.tab.c"
     break;
 
   case 30:
@@ -1904,7 +1904,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1908 "y.tab.cpp"
+#line 1908 "y.tab.c"
     break;
 
   case 31:
@@ -1912,7 +1912,7 @@ yyreduce:
         {
 	ClaComando(20);
 }
-#line 1916 "y.tab.cpp"
+#line 1916 "y.tab.c"
     break;
 
   case 32:
@@ -1920,7 +1920,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1924 "y.tab.cpp"
+#line 1924 "y.tab.c"
     break;
 
   case 33:
@@ -1928,7 +1928,7 @@ yyreduce:
                             {
 	comando=7;
 }
-#line 1932 "y.tab.cpp"
+#line 1932 "y.tab.c"
     break;
 
   case 36:
@@ -1937,7 +1937,7 @@ yyreduce:
 	info8.id=(yyvsp[0].cadena);
 	
 }
-#line 1941 "y.tab.cpp"
+#line 1941 "y.tab.c"
     break;
 
   case 37:
@@ -1956,7 +1956,7 @@ yyreduce:
 	}
 	
 }
-#line 1960 "y.tab.cpp"
+#line 1960 "y.tab.c"
     break;
 
   case 38:
@@ -1974,7 +1974,7 @@ yyreduce:
 	}
 	
 }
-#line 1978 "y.tab.cpp"
+#line 1978 "y.tab.c"
     break;
 
   case 41:
@@ -1982,7 +1982,7 @@ yyreduce:
                            {
 	info9.usuario=(yyvsp[0].cadena);
 }
-#line 1986 "y.tab.cpp"
+#line 1986 "y.tab.c"
     break;
 
   case 42:
@@ -1990,7 +1990,7 @@ yyreduce:
                   {
 	info9.usuario=(yyvsp[0].cadena);
 }
-#line 1994 "y.tab.cpp"
+#line 1994 "y.tab.c"
     break;
 
   case 43:
@@ -1998,7 +1998,7 @@ yyreduce:
                  {
 	info9.password=(yyvsp[0].cadena);
 }
-#line 2002 "y.tab.cpp"
+#line 2002 "y.tab.c"
     break;
 
   case 44:
@@ -2006,7 +2006,7 @@ yyreduce:
                   {
 	info9.password=(yyvsp[0].cadena);
 }
-#line 2010 "y.tab.cpp"
+#line 2010 "y.tab.c"
     break;
 
   case 45:
@@ -2015,7 +2015,7 @@ yyreduce:
 	int tex=(yyvsp[0].real);
 	info9.password=intToCharP(tex);
 }
-#line 2019 "y.tab.cpp"
+#line 2019 "y.tab.c"
     break;
 
   case 46:
@@ -2023,7 +2023,7 @@ yyreduce:
                 {
 	info9.id=(yyvsp[0].cadena);
 }
-#line 2027 "y.tab.cpp"
+#line 2027 "y.tab.c"
     break;
 
   case 47:
@@ -2031,7 +2031,7 @@ yyreduce:
                               {
 
 }
-#line 2035 "y.tab.cpp"
+#line 2035 "y.tab.c"
     break;
 
   case 48:
@@ -2039,7 +2039,7 @@ yyreduce:
                    {
 
 }
-#line 2043 "y.tab.cpp"
+#line 2043 "y.tab.c"
     break;
 
   case 49:
@@ -2047,7 +2047,7 @@ yyreduce:
                               {
 
 }
-#line 2051 "y.tab.cpp"
+#line 2051 "y.tab.c"
     break;
 
   case 50:
@@ -2055,7 +2055,7 @@ yyreduce:
                    {
 
 }
-#line 2059 "y.tab.cpp"
+#line 2059 "y.tab.c"
     break;
 
   case 53:
@@ -2063,7 +2063,7 @@ yyreduce:
                             {
 
 }
-#line 2067 "y.tab.cpp"
+#line 2067 "y.tab.c"
     break;
 
   case 54:
@@ -2071,7 +2071,7 @@ yyreduce:
                   {
 
 }
-#line 2075 "y.tab.cpp"
+#line 2075 "y.tab.c"
     break;
 
   case 55:
@@ -2079,7 +2079,7 @@ yyreduce:
                  {
 
 }
-#line 2083 "y.tab.cpp"
+#line 2083 "y.tab.c"
     break;
 
   case 56:
@@ -2087,7 +2087,7 @@ yyreduce:
                  {
 
 }
-#line 2091 "y.tab.cpp"
+#line 2091 "y.tab.c"
     break;
 
   case 57:
@@ -2095,7 +2095,7 @@ yyreduce:
                   {
 
 }
-#line 2099 "y.tab.cpp"
+#line 2099 "y.tab.c"
     break;
 
   case 58:
@@ -2103,7 +2103,7 @@ yyreduce:
                              {
 
 }
-#line 2107 "y.tab.cpp"
+#line 2107 "y.tab.c"
     break;
 
   case 59:
@@ -2111,7 +2111,7 @@ yyreduce:
                   {
 
 }
-#line 2115 "y.tab.cpp"
+#line 2115 "y.tab.c"
     break;
 
   case 62:
@@ -2119,7 +2119,7 @@ yyreduce:
                             {
 
 }
-#line 2123 "y.tab.cpp"
+#line 2123 "y.tab.c"
     break;
 
   case 63:
@@ -2127,7 +2127,7 @@ yyreduce:
                  {
 
 }
-#line 2131 "y.tab.cpp"
+#line 2131 "y.tab.c"
     break;
 
   case 64:
@@ -2135,7 +2135,7 @@ yyreduce:
                  {
 
 }
-#line 2139 "y.tab.cpp"
+#line 2139 "y.tab.c"
     break;
 
   case 65:
@@ -2143,7 +2143,7 @@ yyreduce:
    {
 
 }
-#line 2147 "y.tab.cpp"
+#line 2147 "y.tab.c"
     break;
 
   case 68:
@@ -2151,7 +2151,7 @@ yyreduce:
                             {
 
 }
-#line 2155 "y.tab.cpp"
+#line 2155 "y.tab.c"
     break;
 
   case 69:
@@ -2159,7 +2159,7 @@ yyreduce:
                  {
 
 }
-#line 2163 "y.tab.cpp"
+#line 2163 "y.tab.c"
     break;
 
   case 70:
@@ -2167,7 +2167,7 @@ yyreduce:
    {
 
 }
-#line 2171 "y.tab.cpp"
+#line 2171 "y.tab.c"
     break;
 
   case 71:
@@ -2175,7 +2175,7 @@ yyreduce:
                   {
 
 }
-#line 2179 "y.tab.cpp"
+#line 2179 "y.tab.c"
     break;
 
   case 72:
@@ -2183,7 +2183,7 @@ yyreduce:
                  {
 
 }
-#line 2187 "y.tab.cpp"
+#line 2187 "y.tab.c"
     break;
 
   case 73:
@@ -2191,7 +2191,7 @@ yyreduce:
                  {
 
 }
-#line 2195 "y.tab.cpp"
+#line 2195 "y.tab.c"
     break;
 
   case 74:
@@ -2199,7 +2199,7 @@ yyreduce:
                               {
 
 }
-#line 2203 "y.tab.cpp"
+#line 2203 "y.tab.c"
     break;
 
   case 75:
@@ -2207,7 +2207,7 @@ yyreduce:
                   {
 
 }
-#line 2211 "y.tab.cpp"
+#line 2211 "y.tab.c"
     break;
 
   case 76:
@@ -2215,7 +2215,7 @@ yyreduce:
                              {
 
 }
-#line 2219 "y.tab.cpp"
+#line 2219 "y.tab.c"
     break;
 
   case 77:
@@ -2224,7 +2224,7 @@ yyreduce:
 
 
 }
-#line 2228 "y.tab.cpp"
+#line 2228 "y.tab.c"
     break;
 
   case 80:
@@ -2232,7 +2232,7 @@ yyreduce:
                             {
 
 }
-#line 2236 "y.tab.cpp"
+#line 2236 "y.tab.c"
     break;
 
   case 81:
@@ -2240,7 +2240,7 @@ yyreduce:
                  {
 
 }
-#line 2244 "y.tab.cpp"
+#line 2244 "y.tab.c"
     break;
 
   case 82:
@@ -2248,7 +2248,7 @@ yyreduce:
                  {
 
 }
-#line 2252 "y.tab.cpp"
+#line 2252 "y.tab.c"
     break;
 
   case 83:
@@ -2256,7 +2256,7 @@ yyreduce:
                  {
 
 }
-#line 2260 "y.tab.cpp"
+#line 2260 "y.tab.c"
     break;
 
   case 86:
@@ -2264,7 +2264,7 @@ yyreduce:
                             {
 
 }
-#line 2268 "y.tab.cpp"
+#line 2268 "y.tab.c"
     break;
 
   case 87:
@@ -2272,7 +2272,7 @@ yyreduce:
                  {
 
 }
-#line 2276 "y.tab.cpp"
+#line 2276 "y.tab.c"
     break;
 
   case 88:
@@ -2280,7 +2280,7 @@ yyreduce:
                   {
 
 }
-#line 2284 "y.tab.cpp"
+#line 2284 "y.tab.c"
     break;
 
   case 89:
@@ -2288,31 +2288,31 @@ yyreduce:
                    {
 
 }
-#line 2292 "y.tab.cpp"
+#line 2292 "y.tab.c"
     break;
 
   case 92:
 #line 523 "ana.y"
                             {
-
+	info10.path=(yyvsp[0].cadena);
 }
-#line 2300 "y.tab.cpp"
+#line 2300 "y.tab.c"
     break;
 
   case 93:
 #line 526 "ana.y"
                  {
-
+	info10.path=(yyvsp[0].cadena);
 }
-#line 2308 "y.tab.cpp"
+#line 2308 "y.tab.c"
     break;
 
   case 94:
 #line 529 "ana.y"
   {
-
+	info10.p=1;
 }
-#line 2316 "y.tab.cpp"
+#line 2316 "y.tab.c"
     break;
 
   case 97:
@@ -2320,7 +2320,7 @@ yyreduce:
                             {
 
 }
-#line 2324 "y.tab.cpp"
+#line 2324 "y.tab.c"
     break;
 
   case 98:
@@ -2328,7 +2328,7 @@ yyreduce:
                  {
 
 }
-#line 2332 "y.tab.cpp"
+#line 2332 "y.tab.c"
     break;
 
   case 99:
@@ -2336,7 +2336,7 @@ yyreduce:
                  {
 
 }
-#line 2340 "y.tab.cpp"
+#line 2340 "y.tab.c"
     break;
 
   case 100:
@@ -2344,7 +2344,7 @@ yyreduce:
                  {
 
 }
-#line 2348 "y.tab.cpp"
+#line 2348 "y.tab.c"
     break;
 
   case 103:
@@ -2352,7 +2352,7 @@ yyreduce:
                             {
 
 }
-#line 2356 "y.tab.cpp"
+#line 2356 "y.tab.c"
     break;
 
   case 104:
@@ -2360,7 +2360,7 @@ yyreduce:
                  {
 
 }
-#line 2364 "y.tab.cpp"
+#line 2364 "y.tab.c"
     break;
 
   case 105:
@@ -2368,7 +2368,7 @@ yyreduce:
                  {
 
 }
-#line 2372 "y.tab.cpp"
+#line 2372 "y.tab.c"
     break;
 
   case 106:
@@ -2376,7 +2376,7 @@ yyreduce:
                  {
 
 }
-#line 2380 "y.tab.cpp"
+#line 2380 "y.tab.c"
     break;
 
   case 109:
@@ -2384,7 +2384,7 @@ yyreduce:
                             {
 
 }
-#line 2388 "y.tab.cpp"
+#line 2388 "y.tab.c"
     break;
 
   case 110:
@@ -2392,7 +2392,7 @@ yyreduce:
                  {
 
 }
-#line 2396 "y.tab.cpp"
+#line 2396 "y.tab.c"
     break;
 
   case 111:
@@ -2400,7 +2400,7 @@ yyreduce:
                  {
 
 }
-#line 2404 "y.tab.cpp"
+#line 2404 "y.tab.c"
     break;
 
   case 112:
@@ -2408,7 +2408,7 @@ yyreduce:
                  {
 
 }
-#line 2412 "y.tab.cpp"
+#line 2412 "y.tab.c"
     break;
 
   case 113:
@@ -2416,7 +2416,7 @@ yyreduce:
                   {
 
 }
-#line 2420 "y.tab.cpp"
+#line 2420 "y.tab.c"
     break;
 
   case 114:
@@ -2424,7 +2424,7 @@ yyreduce:
                    {
 
 }
-#line 2428 "y.tab.cpp"
+#line 2428 "y.tab.c"
     break;
 
   case 117:
@@ -2432,7 +2432,7 @@ yyreduce:
                             {
 
 }
-#line 2436 "y.tab.cpp"
+#line 2436 "y.tab.c"
     break;
 
   case 118:
@@ -2440,7 +2440,7 @@ yyreduce:
                  {
 
 }
-#line 2444 "y.tab.cpp"
+#line 2444 "y.tab.c"
     break;
 
   case 119:
@@ -2448,7 +2448,7 @@ yyreduce:
   {
 
 }
-#line 2452 "y.tab.cpp"
+#line 2452 "y.tab.c"
     break;
 
   case 120:
@@ -2456,7 +2456,7 @@ yyreduce:
                  {
 
 }
-#line 2460 "y.tab.cpp"
+#line 2460 "y.tab.c"
     break;
 
   case 121:
@@ -2464,7 +2464,7 @@ yyreduce:
                   {
 
 }
-#line 2468 "y.tab.cpp"
+#line 2468 "y.tab.c"
     break;
 
   case 124:
@@ -2472,7 +2472,7 @@ yyreduce:
                             {
 
 }
-#line 2476 "y.tab.cpp"
+#line 2476 "y.tab.c"
     break;
 
   case 125:
@@ -2480,7 +2480,7 @@ yyreduce:
                   {
 
 }
-#line 2484 "y.tab.cpp"
+#line 2484 "y.tab.c"
     break;
 
   case 126:
@@ -2488,7 +2488,7 @@ yyreduce:
                  {
 
 }
-#line 2492 "y.tab.cpp"
+#line 2492 "y.tab.c"
     break;
 
   case 127:
@@ -2496,7 +2496,7 @@ yyreduce:
                   {
 
 }
-#line 2500 "y.tab.cpp"
+#line 2500 "y.tab.c"
     break;
 
   case 128:
@@ -2504,7 +2504,7 @@ yyreduce:
                             {
 
 }
-#line 2508 "y.tab.cpp"
+#line 2508 "y.tab.c"
     break;
 
   case 129:
@@ -2512,7 +2512,7 @@ yyreduce:
                             {
 
 }
-#line 2516 "y.tab.cpp"
+#line 2516 "y.tab.c"
     break;
 
   case 132:
@@ -2527,7 +2527,7 @@ yyreduce:
 		//el tamano no es correcto
 	}
 }
-#line 2531 "y.tab.cpp"
+#line 2531 "y.tab.c"
     break;
 
   case 133:
@@ -2549,7 +2549,7 @@ yyreduce:
 	//el ajuste no es correcto
 	}
 }
-#line 2553 "y.tab.cpp"
+#line 2553 "y.tab.c"
     break;
 
   case 134:
@@ -2569,7 +2569,7 @@ yyreduce:
 	//las unidades no son correctas
 	}
 }
-#line 2573 "y.tab.cpp"
+#line 2573 "y.tab.c"
     break;
 
   case 135:
@@ -2578,7 +2578,7 @@ yyreduce:
 
 	info1.path=(yyvsp[0].cadena);
 }
-#line 2582 "y.tab.cpp"
+#line 2582 "y.tab.c"
     break;
 
   case 136:
@@ -2587,7 +2587,7 @@ yyreduce:
 
 	info1.path=(yyvsp[0].cadena);
 }
-#line 2591 "y.tab.cpp"
+#line 2591 "y.tab.c"
     break;
 
   case 137:
@@ -2597,7 +2597,7 @@ yyreduce:
 	info2.path=(yyvsp[0].cadena);
 
 }
-#line 2601 "y.tab.cpp"
+#line 2601 "y.tab.c"
     break;
 
   case 138:
@@ -2607,7 +2607,7 @@ yyreduce:
 	info2.path=(yyvsp[0].cadena);
 
 }
-#line 2611 "y.tab.cpp"
+#line 2611 "y.tab.c"
     break;
 
   case 141:
@@ -2622,7 +2622,7 @@ yyreduce:
 		//el tamano no es correcto
 	}
 }
-#line 2626 "y.tab.cpp"
+#line 2626 "y.tab.c"
     break;
 
   case 142:
@@ -2645,7 +2645,7 @@ yyreduce:
 	//las unidades no son correctas
 	}
 }
-#line 2649 "y.tab.cpp"
+#line 2649 "y.tab.c"
     break;
 
   case 143:
@@ -2667,7 +2667,7 @@ yyreduce:
 	//el ajuste no es correcto
 	}
 }
-#line 2671 "y.tab.cpp"
+#line 2671 "y.tab.c"
     break;
 
   case 144:
@@ -2677,7 +2677,7 @@ yyreduce:
 	info3.path=(yyvsp[0].cadena);
 
 }
-#line 2681 "y.tab.cpp"
+#line 2681 "y.tab.c"
     break;
 
   case 145:
@@ -2687,7 +2687,7 @@ yyreduce:
 	info3.path=(yyvsp[0].cadena);
 
 }
-#line 2691 "y.tab.cpp"
+#line 2691 "y.tab.c"
     break;
 
   case 146:
@@ -2709,7 +2709,7 @@ yyreduce:
 	//el tipo de partcion no es correcto
 	}
 }
-#line 2713 "y.tab.cpp"
+#line 2713 "y.tab.c"
     break;
 
   case 147:
@@ -2728,7 +2728,7 @@ yyreduce:
 	//el tipo de partcion no es correcto
 	}
 }
-#line 2732 "y.tab.cpp"
+#line 2732 "y.tab.c"
     break;
 
   case 148:
@@ -2738,7 +2738,7 @@ yyreduce:
 	info3.name=(yyvsp[0].cadena);
 
 }
-#line 2742 "y.tab.cpp"
+#line 2742 "y.tab.c"
     break;
 
   case 149:
@@ -2748,7 +2748,7 @@ yyreduce:
 	info3.add=(int)(yyvsp[0].real);
 
 }
-#line 2752 "y.tab.cpp"
+#line 2752 "y.tab.c"
     break;
 
   case 152:
@@ -2758,7 +2758,7 @@ yyreduce:
 	info4.name=(yyvsp[0].cadena);
 
 }
-#line 2762 "y.tab.cpp"
+#line 2762 "y.tab.c"
     break;
 
   case 153:
@@ -2768,7 +2768,7 @@ yyreduce:
 	info4.path=(yyvsp[0].cadena);
 
 }
-#line 2772 "y.tab.cpp"
+#line 2772 "y.tab.c"
     break;
 
   case 154:
@@ -2778,7 +2778,7 @@ yyreduce:
 	info4.path=(yyvsp[0].cadena);
 
 }
-#line 2782 "y.tab.cpp"
+#line 2782 "y.tab.c"
     break;
 
   case 155:
@@ -2788,7 +2788,7 @@ yyreduce:
 	info5.id=(yyvsp[0].cadena);
 
 }
-#line 2792 "y.tab.cpp"
+#line 2792 "y.tab.c"
     break;
 
   case 158:
@@ -2796,7 +2796,7 @@ yyreduce:
                             {
 	
 }
-#line 2800 "y.tab.cpp"
+#line 2800 "y.tab.c"
     break;
 
   case 159:
@@ -2806,7 +2806,7 @@ yyreduce:
 	info6.path=(yyvsp[0].cadena);
 
 }
-#line 2810 "y.tab.cpp"
+#line 2810 "y.tab.c"
     break;
 
   case 160:
@@ -2816,7 +2816,7 @@ yyreduce:
 	info6.path=(yyvsp[0].cadena);
 
 }
-#line 2820 "y.tab.cpp"
+#line 2820 "y.tab.c"
     break;
 
   case 161:
@@ -2826,7 +2826,7 @@ yyreduce:
 	info6.id=(yyvsp[0].cadena);
 
 }
-#line 2830 "y.tab.cpp"
+#line 2830 "y.tab.c"
     break;
 
   case 162:
@@ -2836,7 +2836,7 @@ yyreduce:
 	info6.id=(yyvsp[0].cadena);
 
 }
-#line 2840 "y.tab.cpp"
+#line 2840 "y.tab.c"
     break;
 
   case 163:
@@ -2846,7 +2846,7 @@ yyreduce:
 	info6.id=(yyvsp[0].cadena);
 
 }
-#line 2850 "y.tab.cpp"
+#line 2850 "y.tab.c"
     break;
 
   case 164:
@@ -2856,7 +2856,7 @@ yyreduce:
 	info7.path=(yyvsp[0].cadena);
 
 }
-#line 2860 "y.tab.cpp"
+#line 2860 "y.tab.c"
     break;
 
   case 165:
@@ -2866,11 +2866,11 @@ yyreduce:
 	info7.path=(yyvsp[0].cadena);
 
 }
-#line 2870 "y.tab.cpp"
+#line 2870 "y.tab.c"
     break;
 
 
-#line 2874 "y.tab.cpp"
+#line 2874 "y.tab.c"
 
       default: break;
     }
