@@ -4,7 +4,7 @@ int recorridoBloque(ifstream &archivo ,int direccion, vector <char *> * valores 
 int recorridoBloqueIndirecto(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla,int * bdir );
 int recorridoInodo(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla,int * bdir );
 int BusquedaRuta(PARTITION particion , char * nombrearchivo ,char * ruta);
-
+int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo);
 
 
 void Wfolder(Mkdir info){
@@ -85,6 +85,8 @@ int BusquedaRuta(PARTITION particion ,char * nombrearchivo,char * ruta){
                         cout<<carpe[i]<<endl;
                     }
                     cout<<(*bdireccion)<<endl;
+
+
                 }else{
                     cout<<"La particion no esta formateada con ningun sistema de archivos"<<endl;
                 }
@@ -99,6 +101,242 @@ int BusquedaRuta(PARTITION particion ,char * nombrearchivo,char * ruta){
 
     return retorna;
 }
+
+
+///aplicar ajuste
+///ver llenar bitmap inodos  bloques
+
+
+///construye los nuevos inodos y bloques para la ruta vector que se le pasa
+///archivo es el archivo
+///dirBlo es la direccion del ultimo bloque para reenlazar con el siguiente
+///dirAbsIno es la direccion del ultimo inodo que se leyo , ahi se guaerdar la  nueva info
+///valores es la lista donde se guarda la ruta separada
+///desp es el deslazamiento relativo a la particion
+void buildMulPath(ifstream &archivo , int dirBlo ,int dirAbsIno,vector <char *> * valores , int desp){
+
+    ///toda la ruta no esta construida
+    if(dirBlo==0){
+        inodo temp;
+        archivo.seekg(dirAbsIno);
+        archivo.read((char*)&temp, sizeof(inodo));
+
+        if((temp.i_type==1)||(temp.i_type==2)){
+            char * tp=(char*)malloc(sizeof(char));
+            int res= busApuLibreInodo(archivo, temp , desp,tp);
+
+            if(((*tp)==1)&&(res!=-1)){
+            ///en apuntador carpeta
+
+            }else if(((*tp)==2)&&(res!=-1)){
+            ///en el inodo apuntador
+
+            }else if(((*tp)==3)&&(res!=-1)){
+            ///en primer apuntador indirecto , primer nivel
+
+            }else if(((*tp)==4)&&(res!=-1)){
+            ///en segundo apuntador indirecto , primer nivel
+
+            }else if(((*tp)==5)&&(res!=-1)){
+            ///en segundo apuntador indirecto , segundo nivel
+
+            }else if(((*tp)==6)&&(res!=-1)){
+            ///en tercer apuntador indirecto , primer nivel
+
+            }else if(((*tp)==7)&&(res!=-1)){
+            ///en tercer apuntador indirecto , segundo nivel
+
+            }else if(((*tp)==8)&&(res!=-1)){
+            ///en tercer apuntador indirecto , tercer nivel
+
+            }else{
+                cout<<"la direccion es nula o el tipo esta mal"<<endl;
+            }
+
+
+        }else{
+            cout<<"El inodo leido esta corrupto"<<endl;
+
+        }
+
+
+
+    }else{
+    ///parte de la ruta esta creada
+    ///existe un bloque antes creado
+    ///inicia reenlazar
+
+
+    }
+
+
+
+
+
+
+
+}
+
+
+///al eliminar , no eliminar el primer bloque si existen mas carptas creadas en la misma linea
+
+
+int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo){
+    ///1 es apuntador carpeta   /retorna la direccion relativa
+    ///2 es dentro del inodo    /retorna la posicion /cuidado 12 13 14 y el 0
+    ///3 es apuntador indirecto 1 /retorna la direccion
+
+    ///4 es apuntador indirecto 2 primer nivel /retorna la direccion
+    ///5 es apuntador indirecto 2 segundo nivel /retorna la direccion
+
+    ///6 es apuntador indirecto 3 primer nivel /retorna la direccion
+    ///7 es apuntador indirecto 3 segundo nivel /retorna la direccion
+    ///8 es apuntador indirecto 3 tercer nivel /retorna la direccion
+
+    ///ApuntadorInd , Nivel
+    ///1 1
+    ///2 1 2
+    ///3 1 2 3
+
+
+    int retorna=-1;
+
+
+    ///primero busca dentro del primer bloque si existiera
+    if(ino.i_block[0]!=0){
+        ///lee el bloque para verificar que exista espacio en el cuarto y tercer bloque
+        BloqueCarpeta temp;
+        input_file.seekg(desp+ino.i_block[0]);
+        input_file.read((char*)&temp, sizeof(BloqueCarpeta));
+
+        if((temp.b_content[0].b_inodo!=0)&&(temp.b_content[1].b_inodo!=0)){
+            ///verifica espcio libre
+            if((temp.b_content[2].b_inodo==0)||(temp.b_content[3].b_inodo==0)){
+                retorna=ino.i_block[0];
+                (*tipo)=1;
+            }
+
+        }else{
+            cout<<"El bloque esta corrupto"<<endl;
+        }
+    }
+
+    ///seguiria analizando las otras posiciones a 15*
+    if(retorna==-1){
+        for(int i=0;i<15;i++){
+            if(ino.i_block[i]==0){
+                retorna=i;
+                (*tipo)=2;
+                break;
+            }
+        }
+    }
+
+
+    ///seguiria analizando la posicion indirecta 12*
+    if((retorna==-1)&&(ino.i_block[12]!=0)){
+        BloqueApuntador temp;
+        input_file.seekg(desp+ino.i_block[12]);
+        input_file.read((char*)&temp, sizeof(BloqueApuntador));
+
+        for(int i=0;i<16;i++){
+            if(temp.b_pointers[i]==0){
+                retorna=ino.i_block[12];
+                (*tipo)=3;
+                break;
+            }
+        }
+    }
+
+
+
+
+
+    ///seguiria analizando la posicion indirecta 13*
+    if((retorna==-1)&&(ino.i_block[13]!=0)){
+        BloqueApuntador temp;
+        input_file.seekg(desp+ino.i_block[13]);
+        input_file.read((char*)&temp, sizeof(BloqueApuntador));
+
+        for(int i=0;i<16;i++){
+            ///primero busca espacio libre Pindirecto primer nivel , numero 13
+            if(temp.b_pointers[i]==0){
+                retorna=ino.i_block[13];
+                (*tipo)=4;
+                break;
+            }else{
+            ///si esta ocupado , entra y busca en el segundo nivel , numero 13
+                BloqueApuntador temp2;
+                input_file.seekg(desp+temp.b_pointers[i]);
+                input_file.read((char*)&temp2 , sizeof(BloqueApuntador));
+
+                for(int j=0;j<16;j++){
+                    if(temp2.b_pointers[j]==0){
+                        retorna=temp.b_pointers[i];
+                        (*tipo)=5;
+                        break;
+                    }
+                }
+
+            }
+        }
+    }
+
+
+
+    ///seguiria analizando la posicion indirecta 14*
+    if((retorna==-1)&&(ino.i_block[14]!=0)){
+        BloqueApuntador temp;
+        input_file.seekg(desp+ino.i_block[14]);
+        input_file.read((char*)&temp, sizeof(BloqueApuntador));
+
+        for(int i=0;i<16;i++){
+            ///primero busca espacio libre Pindirecto primer nivel , numero 14
+            if(temp.b_pointers[i]==0){
+                retorna=ino.i_block[14];
+                (*tipo)=6;
+                break;
+            }else{
+            ///si esta ocupado , entra y busca en el segundo nivel , numero 14
+                BloqueApuntador temp2;
+                input_file.seekg(desp+temp.b_pointers[i]);
+                input_file.read((char*)&temp2 , sizeof(BloqueApuntador));
+
+                for(int j=0;j<16;j++){
+                    if(temp2.b_pointers[j]==0){
+                        retorna=temp.b_pointers[i];
+                        (*tipo)=7;
+                        break;
+                    }else{
+                    ///si esta ocupado , entra y busca en el tercer nivel , numero 14
+                        BloqueApuntador temp3;
+                        input_file.seekg(desp+temp2.b_pointers[j]);
+                        input_file.read((char*)&temp3 , sizeof(BloqueApuntador));
+
+                        for(int k=0;k<16;k++){
+                            if(temp2.b_pointers[k]==0){
+                                retorna=temp2.b_pointers[j];
+                                (*tipo)=8;
+                                break;
+                            }
+                        }
+
+                    }
+                }
+
+            }
+        }
+    }
+
+
+ return retorna;
+
+
+}
+
+
+
+
 
 
 ///cuando eliminar validar que no queden bloques
