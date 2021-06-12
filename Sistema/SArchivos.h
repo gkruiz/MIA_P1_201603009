@@ -185,21 +185,21 @@ DiskMount RetMount(char * id){
 void Formateo(char *nomarchivo,int N ,PARTITION particion,MBR tempoMBR,int tipoforma){
 
     time_t now = time(0);
-
+    ///todas son direcciones relativas a la particion
     SB superBloque;
     superBloque.s_filesystem_type=1;
-    superBloque.s_inodes_count=N;
-    superBloque.s_blocks_count=3*N;
-    superBloque.s_free_inodes_count=N;
-    superBloque.s_free_blocks_count=3*N;
+    superBloque.s_inodes_count=N;           ///todos los inodos
+    superBloque.s_blocks_count=3*N;         ///todos los bloques
+    superBloque.s_free_inodes_count=N-2;    ///-2 porque usa dos al formatear
+    superBloque.s_free_blocks_count=(3*N)-2;/// lo mismo 2 bloques usados
     superBloque.s_mtime=0;
     superBloque.s_umtime=0;
     superBloque.s_mnt_count=0;
     superBloque.s_magic=0xEF53;
-    superBloque.s_inode_size=sizeof(inodo);
-    superBloque.s_block_size=sizeof(BloqueApuntador);
-    superBloque.s_first_ino=0;
-    superBloque.s_first_blo=0;
+    superBloque.s_inode_size=N*sizeof(inodo);///tamano del bloque inodo
+    superBloque.s_block_size=3*N*sizeof(BloqueApuntador);///tamano del bloque bloques
+    superBloque.s_first_ino=(sizeof(SB)+N+(3*N))+(2*sizeof(inodo));             ///apunta ultimo inodo libre
+    superBloque.s_first_blo=(sizeof(SB)+N+(3*N)+(N*sizeof(inodo)))+(2*sizeof(BloqueApuntador));///apunta ultimo bloque libre
     ///calculo inicio bitmap inodos ,empieza al final del superbloque
     superBloque.s_bm_inode_start=sizeof(SB);
     superBloque.s_bm_block_start=sizeof(SB)+N;
@@ -218,7 +218,7 @@ void Formateo(char *nomarchivo,int N ,PARTITION particion,MBR tempoMBR,int tipof
     primero.i_ctime=now;///fecha creacion
     primero.i_block[0]=superBloque.s_block_start;///Primer apuntador va al primer bloque
     primero.i_type=1;///es una carpeta
-    primero.i_perm=0;///Permisos
+    primero.i_perm=777;///Permisos
 
 
 
@@ -257,7 +257,7 @@ void Formateo(char *nomarchivo,int N ,PARTITION particion,MBR tempoMBR,int tipof
     archi.i_ctime=now;  ///fecha creacion
     archi.i_block[0]=superBloque.s_block_start+sizeof(BloqueArchivo);     ///van los apuntadores
     archi.i_type=2;     ///es un archivo
-    archi.i_perm=0;     ///Permisos
+    archi.i_perm=777;     ///Permisos
 
 
     BloqueArchivo arch;

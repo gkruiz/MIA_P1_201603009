@@ -70,18 +70,23 @@ struct DiskMount{
 struct SB{
 
     int s_filesystem_type=-1;
+
     int s_inodes_count=-1;
     int s_blocks_count=-1;
     int s_free_blocks_count=-1;
     int s_free_inodes_count=-1;
+
     time_t s_mtime;
     time_t s_umtime;
     int s_mnt_count=-1;
     int s_magic=-1;
+    ///dimensiones de los bloques
     int s_inode_size=-1;
     int s_block_size=-1;
+
     int s_first_ino=-1;
     int s_first_blo=-1;
+    ///posiciones bloques
     int s_bm_inode_start=-1;
     int s_bm_block_start=-1;
     int s_inode_start=-1;

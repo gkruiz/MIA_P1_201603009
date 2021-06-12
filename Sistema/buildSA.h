@@ -3,7 +3,7 @@
 int recorridoBloque(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla,int * bdir );
 int recorridoBloqueIndirecto(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla,int * bdir );
 int recorridoInodo(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla,int * bdir );
-int BusquedaRuta(PARTITION particion , char * nombrearchivo ,char * ruta);
+int BusquedaRuta(PARTITION particion ,char * nombrearchivo,vector <char *> carpe ,int * bdireccion);
 int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo);
 
 
@@ -29,9 +29,16 @@ void Wfolder(Mkdir info){
                 SB superbloque = getSuperBloque(pmontar , infoP.path);
 
                 if(superbloque.s_block_start!=-1){
-                    ///Inicio obtiene datos de usuarios y grupos
+                    ///tendra la ruta restante que hay que construir
+                    vector <char *> carpe=splitC(ruta,'/');
+                    ///guarda el ultimo bloque que leyo para reenlazar
+                    int * bdireccion=(int *)malloc(sizeof(int));
+                    (*bdireccion)=0;
+                    ///guarda direccion del ultimo inodo donde debe empezar a guardar las nuevas carpetas
+                    int regre= BusquedaRuta(pmontar,infoP.path,info.path,&carpe,bdireccion);
 
-                    int regre= BusquedaRuta(pmontar,infoP.path,info.path);
+
+
                 }else{
                     cout<<"La particion no esta formateada con ningun sistema de archivos"<<endl;
 
@@ -56,20 +63,26 @@ void Wfolder(Mkdir info){
 
 
 
+///particion la particion donde esta guardado el sistma de archivos
+///nombrearchivo nomre del disco
+///*ruta ruta donde hace la busqueda
+///carpe vector donde esta alojada el split de la ruta
+///bdireccio puntero que retorna la direccion del ultimo bloque que leyo para reenlazar
 
-int BusquedaRuta(PARTITION particion ,char * nombrearchivo,char * ruta){
+int BusquedaRuta(PARTITION particion ,char * nombrearchivo,vector <char *> * carpe ,int * bdireccion){
 
     char *nomarchivo=RPfd(nombrearchivo);
     SB superbloque;
-    vector <char *> carpe=splitC(ruta,'/');
-    int * bdireccion=(int *)malloc(sizeof(int));
-    (*bdireccion)=0;
+    //vector <char *> carpe=splitC(ruta,'/');
+    //int * bdireccion=(int *)malloc(sizeof(int));
+    //(*bdireccion)=0;
 
 
     int retorna=-2;
 
 
     ifstream input_file(nomarchivo, ios::binary);
+
         if(input_file){
             input_file.seekg(particion.part_start+sizeof(MBR));
             ///carga el superbloque
@@ -79,14 +92,12 @@ int BusquedaRuta(PARTITION particion ,char * nombrearchivo,char * ruta){
                 if(superbloque.s_block_start!=-1){
                     int posiciont=sizeof(MBR)+particion.part_start+superbloque.s_inode_start;
                     int dezplaza=sizeof(MBR)+particion.part_start;
-                    retorna=recorridoInodo(input_file , posiciont , &carpe , dezplaza , bdireccion);
-                    cout<<retorna<<endl;
+                    retorna=recorridoInodo(input_file , posiciont , carpe , dezplaza , bdireccion);
+                    /*cout<<retorna<<endl;
                     for(int i=0;i<(carpe.size());i++){
                         cout<<carpe[i]<<endl;
                     }
-                    cout<<(*bdireccion)<<endl;
-
-
+                    cout<<(*bdireccion)<<endl;*/
                 }else{
                     cout<<"La particion no esta formateada con ningun sistema de archivos"<<endl;
                 }
@@ -113,7 +124,7 @@ int BusquedaRuta(PARTITION particion ,char * nombrearchivo,char * ruta){
 ///dirAbsIno es la direccion del ultimo inodo que se leyo , ahi se guaerdar la  nueva info
 ///valores es la lista donde se guarda la ruta separada
 ///desp es el deslazamiento relativo a la particion
-void buildMulPath(ifstream &archivo , int dirBlo ,int dirAbsIno,vector <char *> * valores , int desp){
+void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector <char *> * valores , int desp){
 
     ///toda la ruta no esta construida
     if(dirBlo==0){
@@ -127,6 +138,7 @@ void buildMulPath(ifstream &archivo , int dirBlo ,int dirAbsIno,vector <char *> 
 
             if(((*tp)==1)&&(res!=-1)){
             ///en apuntador carpeta
+
 
             }else if(((*tp)==2)&&(res!=-1)){
             ///en el inodo apuntador
@@ -176,6 +188,140 @@ void buildMulPath(ifstream &archivo , int dirBlo ,int dirAbsIno,vector <char *> 
 
 
 }
+
+
+
+
+///marca el bitmap de bloques
+///ip indice posicion del bitmap bloque
+int MarkBMbloque(ifstream &archivo ,SB superb , int desp ,int ip, char* nombrearchivo){
+
+    int retorna=-1;
+
+    int inibitMapBloques=superb.s_bm_block_start;
+    int sizChar=sizeof(char);
+    int canBloques=superb.s_blocks_count;
+
+
+    if(ip<canBloques){
+        int tpos=desp+inibitMapBloques+(ip*sizChar);
+        ofstream output_file(nombrearchivo, ios::in);
+        char tx=1;
+        output_file.seekp(tpos);
+        output_file.write((char*)&tx, sizeof(char));
+        output_file.close();
+
+        (*superb).s_free_inodes_count=((*superb).s_free_inodes_count)-1;
+        ///no calcula aqui nueva direccion vacia de inodo , mejor hacer hasta el final
+
+    }else{
+        cout<<"La posicion del inodo es mayor a la cantidad permitida"<<endl;
+    }
+
+
+    return retorna;
+
+}
+
+
+
+///marca el bitmap de inodos
+///ip indice posicion del bitmap inodo
+int MarkBMinodo(SB * superb , int desp ,int ip, char* nombrearchivo){
+
+    int retorna=-1;
+
+    int inibitMapInodos=(*superb).s_bm_inode_start;
+    int sizChar=sizeof(char);
+    int canInodos=(*superb).s_inodes_count;
+
+    if(ip<canInodos){
+        int tpos=desp+inibitMapInodos+(ip*sizChar);
+        ofstream output_file(nombrearchivo, ios::in);
+        char tx=1;
+        output_file.seekp(tpos);
+        output_file.write((char*)&tx, sizeof(char));
+        output_file.close();
+
+        (*superb).s_free_inodes_count=((*superb).s_free_inodes_count)-1;
+        ///no calcula aqui nueva direccion vacia de inodo , mejor hacer hasta el final
+
+    }else{
+        cout<<"La posicion del inodo es mayor a la cantidad permitida"<<endl;
+    }
+
+    return retorna;
+
+}
+
+
+
+
+
+
+
+///retorna entero posicio del inodo ,NO direccion
+int calcDinodo(ifstream &archivo ,SB superb , int desp){
+
+    int retorna=-1;
+
+    int inibitMapInodos=superb.s_bm_inode_start;
+    int sizChar=sizeof(char);
+    int canInodos=superb.s_inodes_count;
+
+
+    for(int i=0;i<canInodos;i++){
+        int tpos=desp+inibitMapInodos+(i*sizChar);
+        char temp;
+        archivo.seekg(tpos);
+        archivo.read((char*)&temp, sizChar);
+
+        if(temp==0){
+            retorna=i;
+            break;
+        }else if(i==(canInodos-1)){
+            cout<<"No hay espacios libres Inodos"<<endl;
+        }
+    }
+
+    return retorna;
+
+}
+
+
+
+
+
+///retorna entero posicio del inodo ,NO direccion
+int calcDbloque(ifstream &archivo ,SB superb , int desp){
+
+    int retorna=-1;
+
+    int inibitMapBloques=superb.s_bm_block_start;
+    int sizChar=sizeof(char);
+    int canBloques=superb.s_blocks_count;
+
+
+    for(int i=0;i<canBloques;i++){
+        int tpos=desp+inibitMapBloques+(i*sizChar);
+        char temp;
+        archivo.seekg(tpos);
+        archivo.read((char*)&temp, sizChar);
+
+        if(temp==0){
+            retorna=i;
+            break;
+        }else if(i==(canBloques-1)){
+            cout<<"No hay espacios libres bloques"<<endl;
+        }
+    }
+
+    return retorna;
+
+}
+
+
+
 
 
 ///al eliminar , no eliminar el primer bloque si existen mas carptas creadas en la misma linea
