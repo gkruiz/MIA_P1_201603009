@@ -6,6 +6,13 @@ int recorridoInodo(ifstream &archivo ,int direccion, vector <char *> * valores ,
 int BusquedaRuta(PARTITION particion ,char * nombrearchivo,vector <char *> carpe ,int * bdireccion);
 int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo);
 
+void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector <char *> * valores , int desp);
+void MarkBMbloque(ifstream &archivo ,SB * superb , int desp ,int ip, char* nombrearchivo);
+void MarkBMinodo(SB * superb , int desp ,int ip, char* nombrearchivo);
+int calcDinodo(ifstream &archivo ,SB superb , int desp);
+int calcDbloque(ifstream &archivo ,SB superb , int desp);
+
+
 
 void Wfolder(Mkdir info){
 
@@ -28,7 +35,7 @@ void Wfolder(Mkdir info){
             if(pmontar.part_start!=-1){
                 SB superbloque = getSuperBloque(pmontar , infoP.path);
 
-                if(superbloque.s_block_start!=-1){
+                if((superbloque.s_block_start!=-1)&&(superbloque.s_block_start!=0)){
                     ///tendra la ruta restante que hay que construir
                     vector <char *> carpe=splitC(ruta,'/');
                     ///guarda el ultimo bloque que leyo para reenlazar
@@ -136,6 +143,10 @@ void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector
             char * tp=(char*)malloc(sizeof(char));
             int res= busApuLibreInodo(archivo, temp , desp,tp);
 
+            ///INcia calculando las nuevas direcciones para inodo  bloque
+
+
+
             if(((*tp)==1)&&(res!=-1)){
             ///en apuntador carpeta
 
@@ -192,11 +203,114 @@ void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector
 
 
 
+
+
+int creaInBlEnla(ifstream &archivo , int dirPadre , int dirOrigen , char * nombres ,vector<char *> * ruta ,SB * superb , int desp ,char * nomAr ){
+
+    ///verifica que exista dir pardre
+    ///verifica que exista dir Origen
+    ///verifica que existe por lo menos 1 registro
+    int retUltDirBlo=-1;
+    if((((*ruta).size())>0))){
+        if((dirPadre!=-1)&&(dirOrigen!=-1){
+            time_t now = time(0);
+            vector <char *> nombrePyO= splitC(nombres,'/');
+            int dirBlo = calcDbloque(archivo,(*superb),desp);///es numero no direccion
+            int dirIno = calcDinodo(archivo,(*superb),desp);
+            ///calcula la direccion relativa a la particion del ultimo bloque
+            retUltDirBlo=((*superb).s_block_start)+(dirBlo*sizeof(BloqueCarpeta));
+
+            ///Inicia llenado de Inodo y bloque carpeta
+            inodo primero;
+            primero.i_uid=0;    ///usuario propietario
+            primero.i_gid=0;    ///grupo al que pernece propietario
+            primero.i_size=0;   ///tamano del archivo
+            primero.i_atime=now;  ///fecha de ultima lectura
+            primero.i_ctime=now;///fecha creacion
+            ///primero.i_block[0]=superBloque.s_block_start;///Se llenara mas abajo
+            primero.i_type=1;///es una carpeta
+            primero.i_perm=777;///Permisos
+
+
+
+
+            Content info;
+            BloqueCarpeta carpeta;
+
+            ///Apuntador inodo padre:
+            char*text=nombrePyO[0];
+            strcpy(info.b_name, text);
+            info.b_inodo=dirPadre;
+            carpeta.b_content[0]=info;
+
+            ///Apuntador inodo Origen:
+            text=nombrePyO[1];
+            strcpy(info.b_name, text);
+            info.b_inodo=dirOrigen;
+            carpeta.b_content[1]=info;
+
+            ///Apuntador inodo hijo:
+            text=(*ruta)[0];
+            strcpy(info.b_name, text);
+            info.b_inodo=dirIno;
+            carpeta.b_content[2]=info;
+
+            ///INICIA escribir datos de inodo y bloque
+            ///escribe bloque
+            ///Relativo disco / Relativo particion / Relativo Bloque Bloques
+            int tpos=desp+((*superb).s_block_start)+(dirBlo*sizeof(BloqueCarpeta));
+            ofstream output_file(nomAr, ios::in);
+            output_file.seekp(tpos);
+            output_file.write((char*)&carpeta, sizeof(BloqueCarpeta));
+            ///escribe inodo
+            ///Relativo disco / Relativo particion / Relativo Bloque Inodos
+            tpos=desp+((*superb).s_inode_start)+(dirIno*sizeof(inodo));
+            output_file.seekp(tpos);
+            output_file.write((char*)&primero, sizeof(inodo));
+            output_file.close();
+
+            ///Marca los bitmap de inodo y de bloque
+            MarkBMbloque(archivo,superb,desp,dirBlo,nomAr);
+            MarkBMbloque(archivo,superb,desp,dirIno,nomAr);
+
+            ///genera el nombre padre y origen
+            char * diago="/";
+            char * fusiNom=UneChar(nombrePyO[1],diago);
+            fusiNom=UneChar(fusiNom,(*ruta)[0]);
+            cout<<"salunido:"<<fusiNom<<endl;
+
+            ///saca de la lista
+            vector <char *> temV=(*ruta);
+            pop_front(temV);
+            (*ruta)=temV;
+
+            ///ser vuelve a rellamar
+            ///Dir Padre es la de origen , y la de Origen es la del ultimo inodo
+            ///
+
+            creaInBlEnla(archivo , dirOrigen , dirIno , fusiNom ,ruta ,superb ,desp ,nomAr );
+
+
+        }else{
+            cout<<"La direccion Padre u Origen o Size ruta esta mal"<<endl;
+        }
+    }
+
+    return retUltDirBlo;
+
+
+}
+
+
+
+
+
+
+
 ///marca el bitmap de bloques
 ///ip indice posicion del bitmap bloque
-int MarkBMbloque(ifstream &archivo ,SB superb , int desp ,int ip, char* nombrearchivo){
-
-    int retorna=-1;
+///direcciond del super bloque para hacer resta de bloque
+void MarkBMbloque(ifstream &archivo ,SB * superb , int desp ,int ip, char* nombrearchivo){
 
     int inibitMapBloques=superb.s_bm_block_start;
     int sizChar=sizeof(char);
@@ -219,17 +333,14 @@ int MarkBMbloque(ifstream &archivo ,SB superb , int desp ,int ip, char* nombrear
     }
 
 
-    return retorna;
-
 }
 
 
 
 ///marca el bitmap de inodos
 ///ip indice posicion del bitmap inodo
-int MarkBMinodo(SB * superb , int desp ,int ip, char* nombrearchivo){
-
-    int retorna=-1;
+///direccion resta del inodo en sb
+void MarkBMinodo(SB * superb , int desp ,int ip, char* nombrearchivo){
 
     int inibitMapInodos=(*superb).s_bm_inode_start;
     int sizChar=sizeof(char);
@@ -250,11 +361,7 @@ int MarkBMinodo(SB * superb , int desp ,int ip, char* nombrearchivo){
         cout<<"La posicion del inodo es mayor a la cantidad permitida"<<endl;
     }
 
-    return retorna;
-
 }
-
-
 
 
 
@@ -319,7 +426,6 @@ int calcDbloque(ifstream &archivo ,SB superb , int desp){
     return retorna;
 
 }
-
 
 
 
