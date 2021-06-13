@@ -3,15 +3,15 @@
 int recorridoBloque(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla,int * bdir );
 int recorridoBloqueIndirecto(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla,int * bdir );
 int recorridoInodo(ifstream &archivo ,int direccion, vector <char *> * valores ,int dezpla,int * bdir );
-int BusquedaRuta(PARTITION particion ,char * nombrearchivo,vector <char *> carpe ,int * bdireccion);
+int BusquedaRuta(PARTITION particion ,char * nombrearchivo,vector <char *> *carpe ,int * bdireccion);
 int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo);
 
-void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector <char *> * valores , int desp);
-void MarkBMbloque(ifstream &archivo ,SB * superb , int desp ,int ip, char* nombrearchivo);
+void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector <char *> * valores , int desp, char *nomAr);
+void MarkBMbloque(SB * superb , int desp ,int ip, char* nombrearchivo);
 void MarkBMinodo(SB * superb , int desp ,int ip, char* nombrearchivo);
 int calcDinodo(ifstream &archivo ,SB superb , int desp);
 int calcDbloque(ifstream &archivo ,SB superb , int desp);
-
+int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , char * nombres ,vector<char *> * ruta , SB * superb , int desp ,char * nomAr );
 
 
 void Wfolder(Mkdir info){
@@ -37,14 +37,22 @@ void Wfolder(Mkdir info){
 
                 if((superbloque.s_block_start!=-1)&&(superbloque.s_block_start!=0)){
                     ///tendra la ruta restante que hay que construir
-                    vector <char *> carpe=splitC(ruta,'/');
+                    vector <char *> carpe=splitC(info.path,'/');
                     ///guarda el ultimo bloque que leyo para reenlazar
                     int * bdireccion=(int *)malloc(sizeof(int));
                     (*bdireccion)=0;
                     ///guarda direccion del ultimo inodo donde debe empezar a guardar las nuevas carpetas
-                    int regre= BusquedaRuta(pmontar,infoP.path,info.path,&carpe,bdireccion);
+                    int regre= BusquedaRuta(pmontar,infoP.path,&carpe,bdireccion);
 
+                    int desp=sizeof(MBR)+pmontar.part_start;
 
+                    cout<<"Tamano de lista:"<<carpe.size()<<endl;
+
+                    ifstream input_file(infoP.path, ios::binary);
+
+                        buildMulPath(input_file ,superbloque, *bdireccion ,regre, &carpe , desp , infoP.path);
+
+                    input_file.close();
 
                 }else{
                     cout<<"La particion no esta formateada con ningun sistema de archivos"<<endl;
@@ -131,7 +139,9 @@ int BusquedaRuta(PARTITION particion ,char * nombrearchivo,vector <char *> * car
 ///dirAbsIno es la direccion del ultimo inodo que se leyo , ahi se guaerdar la  nueva info
 ///valores es la lista donde se guarda la ruta separada
 ///desp es el deslazamiento relativo a la particion
-void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector <char *> * valores , int desp){
+void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector <char *> * valores , int desp , char *nomAr){
+
+    ///al terminar actualizar el superbloque
 
     ///toda la ruta no esta construida
     if(dirBlo==0){
@@ -145,14 +155,64 @@ void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector
 
             ///INcia calculando las nuevas direcciones para inodo  bloque
 
-
+            cout<<"res:"<<res<<endl;
+            cout<<"*tp:"<<((*tp)*1)<<endl;
 
             if(((*tp)==1)&&(res!=-1)){
             ///en apuntador carpeta
+                BloqueCarpeta tblo;
+                archivo.seekg(desp+res);
+                archivo.read((char*)&tblo, sizeof(BloqueCarpeta));
+                ///valida que bloque no sea corrupto
+                if(longitud(tblo.b_content[0].b_name)>0){
+                    ///empieza analizar en 2 y 3 real
+                    ///genera el nombre padre y origen
+                    char * diago="*";
+                    char * NPadr= ArrtoCharP(tblo.b_content[0].b_name);
+                    char * NHij= ArrtoCharP(tblo.b_content[1].b_name);
+                    char * fusiNom=UneChar(NPadr,diago);
+                    fusiNom=UneChar(fusiNom,NHij);
+                    cout<<"salunido:"<<fusiNom<<endl;
+                    int dirNueva=-1;
+
+                    if(tblo.b_content[2].b_inodo==-1){
+                        ///copia antes de que el nombre se elimine
+                        strcpy(tblo.b_content[2].b_name, (*valores)[0]);
+                        dirNueva= creaInBlEnla('2',archivo ,tblo.b_content[0].b_inodo , tblo.b_content[1].b_inodo , fusiNom ,valores , &superb , desp ,nomAr );
+                        tblo.b_content[2].b_inodo=dirNueva;
+                    }else if(tblo.b_content[3].b_inodo==-1){
+                        ///lo mismo
+                        strcpy(tblo.b_content[3].b_name, (*valores)[0]);
+                        dirNueva= creaInBlEnla('2',archivo ,tblo.b_content[0].b_inodo , tblo.b_content[1].b_inodo , fusiNom ,valores , &superb , desp ,nomAr );
+                        tblo.b_content[3].b_inodo=dirNueva;
+                    }else{
+                        cout<<"Error no libre"<<endl;
+                    }
+
+                    ///guarda el bloque leido ya actualizado
+                    ofstream output_file(nomAr, ios::in);
+                    output_file.seekp(desp+res);
+                    output_file.write((char*)&tblo, sizeof(BloqueCarpeta));
+                    output_file.close();
+
+                }else{
+                    cout<<"Bloque carpeta corrupto"<<endl;
+                }
 
 
             }else if(((*tp)==2)&&(res!=-1)){
             ///en el inodo apuntador
+            char * ss="-1*-1";
+            int dirNueva=-1;
+            dirNueva= creaInBlEnla('2',archivo ,1, 1 , ss ,valores , &superb , desp ,nomAr );
+
+            temp.i_block[res]=dirNueva;
+                ///guarda el bloque leido ya actualizado
+                ofstream output_file(nomAr, ios::in);
+                output_file.seekp(dirAbsIno);
+                output_file.write((char*)&temp, sizeof(inodo));
+                output_file.close();
+
 
             }else if(((*tp)==3)&&(res!=-1)){
             ///en primer apuntador indirecto , primer nivel
@@ -193,32 +253,46 @@ void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector
     }
 
 
-
-
-
-
-
 }
 
 
 
 
-
-
-int creaInBlEnla(ifstream &archivo , int dirPadre , int dirOrigen , char * nombres ,vector<char *> * ruta ,SB * superb , int desp ,char * nomAr ){
+///dir padre es la direccion relativa inodo a la particion
+///dir origen lo mismo relativo
+///nombres "nombre Padre / nombre Origen"
+///ruta es la ruta separada
+///superb super bloque
+///desp es mbr+posicion de la particion
+///nom archi , nombre del archivo para escribir sobre el
+///tipo si crea bloque carpeta pos0 o crea en otro , solo llenaria primer bloque del bloque carpeta
+///'1' es carpeta padre , origen ,hijo ,    '2' carpeta hijo nada mas
+int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , char * nombres ,vector<char *> * ruta , SB * superb , int desp ,char * nomAr ){
 
     ///verifica que exista dir pardre
     ///verifica que exista dir Origen
     ///verifica que existe por lo menos 1 registro
     int retUltDirBlo=-1;
-    if((((*ruta).size())>0))){
-        if((dirPadre!=-1)&&(dirOrigen!=-1){
+    if(((*ruta).size())>0){
+
+        //(dirPadre!=-1)&&
+        if((dirOrigen!=-1)){
             time_t now = time(0);
-            vector <char *> nombrePyO= splitC(nombres,'/');
+            vector <char *> nombrePyO= splitC(nombres,'*');
             int dirBlo = calcDbloque(archivo,(*superb),desp);///es numero no direccion
             int dirIno = calcDinodo(archivo,(*superb),desp);
-            ///calcula la direccion relativa a la particion del ultimo bloque
-            retUltDirBlo=((*superb).s_block_start)+(dirBlo*sizeof(BloqueCarpeta));
+
+            cout<<"dirblo"<<dirBlo<<endl;
+            cout<<"dirino"<<dirIno<<endl;
+
+            if(dirPadre==-1){
+                retUltDirBlo=((*superb).s_inode_start)+(dirIno*sizeof(inodo));
+            }else{
+                ///calcula la direccion relativa a la particion del ultimo bloque
+                retUltDirBlo=((*superb).s_block_start)+(dirBlo*sizeof(BloqueCarpeta));
+            }
+
+
 
             ///Inicia llenado de Inodo y bloque carpeta
             inodo primero;
@@ -237,23 +311,35 @@ int creaInBlEnla(ifstream &archivo , int dirPadre , int dirOrigen , char * nombr
             Content info;
             BloqueCarpeta carpeta;
 
-            ///Apuntador inodo padre:
-            char*text=nombrePyO[0];
-            strcpy(info.b_name, text);
-            info.b_inodo=dirPadre;
-            carpeta.b_content[0]=info;
+            if(tipo=='1'){
+                ///Apuntador inodo padre:
+                char*text=nombrePyO[0];
+                strcpy(info.b_name, text);
+                info.b_inodo=dirPadre;
+                carpeta.b_content[0]=info;
 
-            ///Apuntador inodo Origen:
-            text=nombrePyO[1];
-            strcpy(info.b_name, text);
-            info.b_inodo=dirOrigen;
-            carpeta.b_content[1]=info;
+                ///Apuntador inodo Origen:
+                text=nombrePyO[1];
+                strcpy(info.b_name, text);
+                info.b_inodo=dirOrigen;
+                carpeta.b_content[1]=info;
 
-            ///Apuntador inodo hijo:
-            text=(*ruta)[0];
-            strcpy(info.b_name, text);
-            info.b_inodo=dirIno;
-            carpeta.b_content[2]=info;
+                ///Apuntador inodo hijo:
+                text=(*ruta)[0];
+                strcpy(info.b_name, text);
+                info.b_inodo=((*superb).s_inode_start)+(dirIno*sizeof(inodo));
+                carpeta.b_content[2]=info;
+
+            }else{
+
+                ///Apuntador inodo hijo PRIMERAO:
+                char*text=(*ruta)[0];
+                strcpy(info.b_name, text);
+                info.b_inodo=((*superb).s_inode_start)+(dirIno*sizeof(inodo));
+                carpeta.b_content[0]=info;
+
+            }
+
 
             ///INICIA escribir datos de inodo y bloque
             ///escribe bloque
@@ -265,16 +351,17 @@ int creaInBlEnla(ifstream &archivo , int dirPadre , int dirOrigen , char * nombr
             ///escribe inodo
             ///Relativo disco / Relativo particion / Relativo Bloque Inodos
             tpos=desp+((*superb).s_inode_start)+(dirIno*sizeof(inodo));
+            cout<<"Escribe inodo en p relativa:"<<((*superb).s_inode_start)+(dirIno*sizeof(inodo))<<endl;
             output_file.seekp(tpos);
             output_file.write((char*)&primero, sizeof(inodo));
             output_file.close();
 
             ///Marca los bitmap de inodo y de bloque
-            MarkBMbloque(archivo,superb,desp,dirBlo,nomAr);
-            MarkBMbloque(archivo,superb,desp,dirIno,nomAr);
+            MarkBMbloque(superb,desp,dirBlo,nomAr);
+            MarkBMinodo(superb,desp,dirIno,nomAr);
 
             ///genera el nombre padre y origen
-            char * diago="/";
+            char * diago="*";
             char * fusiNom=UneChar(nombrePyO[1],diago);
             fusiNom=UneChar(fusiNom,(*ruta)[0]);
             cout<<"salunido:"<<fusiNom<<endl;
@@ -288,7 +375,7 @@ int creaInBlEnla(ifstream &archivo , int dirPadre , int dirOrigen , char * nombr
             ///Dir Padre es la de origen , y la de Origen es la del ultimo inodo
             ///
 
-            creaInBlEnla(archivo , dirOrigen , dirIno , fusiNom ,ruta ,superb ,desp ,nomAr );
+            creaInBlEnla('2',archivo , dirOrigen , ((*superb).s_inode_start)+(dirIno*sizeof(inodo)) , fusiNom ,ruta ,superb ,desp ,nomAr );
 
 
         }else{
@@ -310,11 +397,11 @@ int creaInBlEnla(ifstream &archivo , int dirPadre , int dirOrigen , char * nombr
 ///marca el bitmap de bloques
 ///ip indice posicion del bitmap bloque
 ///direcciond del super bloque para hacer resta de bloque
-void MarkBMbloque(ifstream &archivo ,SB * superb , int desp ,int ip, char* nombrearchivo){
+void MarkBMbloque(SB * superb , int desp ,int ip, char* nombrearchivo){
 
-    int inibitMapBloques=superb.s_bm_block_start;
+    int inibitMapBloques=(*superb).s_bm_block_start;
     int sizChar=sizeof(char);
-    int canBloques=superb.s_blocks_count;
+    int canBloques=(*superb).s_blocks_count;
 
 
     if(ip<canBloques){
@@ -460,11 +547,17 @@ int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo){
         BloqueCarpeta temp;
         input_file.seekg(desp+ino.i_block[0]);
         input_file.read((char*)&temp, sizeof(BloqueCarpeta));
+        cout<<"iblock:"<<ino.i_block[0]<<endl;
+        cout<<"pri:"<<temp.b_content[0].b_name<<endl;
+        cout<<"segu:"<<temp.b_content[1].b_name<<endl;
 
-        if((temp.b_content[0].b_inodo!=0)&&(temp.b_content[1].b_inodo!=0)){
+
+        if(longitud(temp.b_content[0].b_name)>0&&longitud(temp.b_content[1].b_name)>0){
             ///verifica espcio libre
-            if((temp.b_content[2].b_inodo==0)||(temp.b_content[3].b_inodo==0)){
+            if((temp.b_content[2].b_inodo==-1)||(temp.b_content[3].b_inodo==-1)){
+
                 retorna=ino.i_block[0];
+
                 (*tipo)=1;
             }
 
@@ -616,14 +709,16 @@ int recorridoInodo(ifstream &archivo ,int direccion, vector <char *> * valores ,
         if((temp.i_type==1||temp.i_type==2)){
             ///valida que sea una carpeta
             if(temp.i_type==1){
-
+                //cout<<"Es una carpeta"<<endl;
                 ///inicia a ver si existen apuntadores creados en el inodo
                 for(int i=0;i<12;i++){
                     if(temp.i_block[i]!=0){
+                    cout<<"Esta en i:"<<i<<endl;
+                    cout<<"Salta a bloque"<<endl;
                     ///existe un apuntador bloque a carpeta o archivo
                     int posiciont=dezpla+temp.i_block[i];
                         retorna=recorridoBloque(archivo,posiciont,valores,dezpla,bdir);
-
+                        cout<<"Retorna?"<<retorna<<endl;
                         if(retorna!=-2){
 
                             break;
@@ -716,6 +811,9 @@ int recorridoInodo(ifstream &archivo ,int direccion, vector <char *> * valores ,
 
 
 
+            }else{
+
+                cout<<"Es un archivo"<<endl;
             }
 
         }else{
@@ -798,6 +896,9 @@ int recorridoBloque(ifstream &archivo ,int direccion, vector <char *> * valores 
                     if(temp.b_content[i].b_inodo!=-1){
                         ///obtiene el nombre guardado en el bloque
                         char * nombenB=ArrtoCharP(temp.b_content[i].b_name);
+                        cout<<"nombreenBloque:"<<nombenB<<endl;
+                        cout<<"nombrecompara:"<<(*valores)[0]<<endl;
+
                         if(Compare(nombenB,(*valores)[0])){
                             ///guarda la ultima direccion del bloque leido
                             (*bdir)=direccion;
@@ -805,6 +906,12 @@ int recorridoBloque(ifstream &archivo ,int direccion, vector <char *> * valores 
                             vector<char *> cambVal=(*valores);
                             pop_front(cambVal);
                             (*valores)=cambVal;
+                            cout<<"t bloque quita:"<<cambVal.size()<<endl;
+                            cout<<"i:"<<i<<endl;
+                            cout<<"t content name?:"<<temp.b_content[i].b_name<<endl;
+                            cout<<"t content inodo?:"<<temp.b_content[i].b_inodo<<endl;
+
+
                             int posiciont=dezpla+temp.b_content[i].b_inodo ;
                             retorna=recorridoInodo(archivo ,posiciont, valores ,dezpla,bdir);
                             break;
