@@ -12,6 +12,10 @@ void MarkBMinodo(SB * superb , int desp ,int ip, char* nombrearchivo);
 int calcDinodo(ifstream &archivo ,SB superb , int desp);
 int calcDbloque(ifstream &archivo ,SB superb , int desp);
 int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , char * nombres ,vector<char *> * ruta , SB * superb , int desp ,char * nomAr );
+int buildMulIndirecto(char *nomAr,int cantidad,int direccion   , ifstream &archivo, SB * superb, int desp);
+void reduEnlazIndCompl(int res ,ifstream &archivo,vector <char*> *valores,SB *superb,int desp,char* nomAr,int punteros);
+
+
 
 
 void Wfolder(Mkdir info){
@@ -27,6 +31,7 @@ void Wfolder(Mkdir info){
     char * id=logueada.id;
 
         DiskMount infoP=RetMount(id);
+
         ///verifica que exista la particio montada
         if(infoP.let!=0){
 
@@ -46,7 +51,7 @@ void Wfolder(Mkdir info){
 
                     int desp=sizeof(MBR)+pmontar.part_start;
 
-                    cout<<"Tamano de lista:"<<carpe.size()<<endl;
+                    //cout<<"Tamano de lista:"<<carpe.size()<<endl;
 
                     ifstream input_file(infoP.path, ios::binary);
 
@@ -139,8 +144,9 @@ int BusquedaRuta(PARTITION particion ,char * nombrearchivo,vector <char *> * car
 ///dirAbsIno es la direccion del ultimo inodo que se leyo , ahi se guaerdar la  nueva info
 ///valores es la lista donde se guarda la ruta separada
 ///desp es el deslazamiento relativo a la particion
-void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector <char *> * valores , int desp , char *nomAr){
+void buildMulPath(ifstream &archivo ,SB stemp, int dirBlo ,int dirAbsIno,vector <char *> * valores , int desp , char *nomAr){
 
+    SB superb = stemp;
     ///al terminar actualizar el superbloque
 
     ///toda la ruta no esta construida
@@ -152,11 +158,10 @@ void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector
         if((temp.i_type==1)||(temp.i_type==2)){
             char * tp=(char*)malloc(sizeof(char));
             int res= busApuLibreInodo(archivo, temp , desp,tp);
-
             ///INcia calculando las nuevas direcciones para inodo  bloque
-
             cout<<"res:"<<res<<endl;
             cout<<"*tp:"<<((*tp)*1)<<endl;
+
 
             if(((*tp)==1)&&(res!=-1)){
             ///en apuntador carpeta
@@ -188,50 +193,76 @@ void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector
                     }else{
                         cout<<"Error no libre"<<endl;
                     }
-
                     ///guarda el bloque leido ya actualizado
                     ofstream output_file(nomAr, ios::in);
                     output_file.seekp(desp+res);
                     output_file.write((char*)&tblo, sizeof(BloqueCarpeta));
                     output_file.close();
-
                 }else{
                     cout<<"Bloque carpeta corrupto"<<endl;
                 }
 
 
+
             }else if(((*tp)==2)&&(res!=-1)){
             ///en el inodo apuntador
-            char * ss="-1*-1";
-            int dirNueva=-1;
-            dirNueva= creaInBlEnla('2',archivo ,1, 1 , ss ,valores , &superb , desp ,nomAr );
 
-            temp.i_block[res]=dirNueva;
-                ///guarda el bloque leido ya actualizado
-                ofstream output_file(nomAr, ios::in);
-                output_file.seekp(dirAbsIno);
-                output_file.write((char*)&temp, sizeof(inodo));
-                output_file.close();
+
+                char * ss="-1*/";
+                int dirNueva=-1;
+                dirNueva= creaInBlEnla('2',archivo ,1, 1 , ss ,valores , &superb , desp ,nomAr );
+                int dirIndirecto=-1;
+
+                if(dirNueva!=-1){
+                    if(res<=11){
+                        cout<<"VALOR DE RES:"<<res<<endl;
+                        temp.i_block[res]=dirNueva;
+                    }else if(res==12){
+                        dirIndirecto=buildMulIndirecto(nomAr,1,dirNueva,archivo,&superb,desp);
+                        temp.i_block[res]=dirIndirecto;
+                    }else if(res==13){
+                        dirIndirecto=buildMulIndirecto(nomAr,2,dirNueva,archivo,&superb,desp);
+                        temp.i_block[res]=dirIndirecto;
+                    }else if(res==14){
+                        dirIndirecto=buildMulIndirecto(nomAr,3,dirNueva,archivo,&superb,desp);
+                        temp.i_block[res]=dirIndirecto;
+                    }else{
+                        cout<<"Error posicion"<<endl;
+                    }
+                     cout<<"sale res:"<<endl;
+                    ///guarda el bloque leido ya actualizado en el INODO
+                    ofstream output_file(nomAr, ios::in);
+                    output_file.seekp(dirAbsIno);
+                    output_file.write((char*)&temp, sizeof(inodo));
+                    output_file.close();
+                }else{
+                    cout<<"Hubo un error al obtener la direccion"<<endl;
+                }
+
+
 
 
             }else if(((*tp)==3)&&(res!=-1)){
             ///en primer apuntador indirecto , primer nivel
+                reduEnlazIndCompl(res , archivo,valores,&superb, desp,nomAr,0);
 
             }else if(((*tp)==4)&&(res!=-1)){
             ///en segundo apuntador indirecto , primer nivel
 
+                reduEnlazIndCompl(res ,archivo, valores , &superb, desp,nomAr,1);
+
             }else if(((*tp)==5)&&(res!=-1)){
             ///en segundo apuntador indirecto , segundo nivel
-
+                reduEnlazIndCompl(res , archivo,valores,&superb, desp,nomAr,0);
             }else if(((*tp)==6)&&(res!=-1)){
             ///en tercer apuntador indirecto , primer nivel
-
+                reduEnlazIndCompl(res ,archivo, valores , &superb, desp,nomAr,2);
             }else if(((*tp)==7)&&(res!=-1)){
             ///en tercer apuntador indirecto , segundo nivel
-
+                reduEnlazIndCompl(res ,archivo, valores , &superb, desp,nomAr,1);
             }else if(((*tp)==8)&&(res!=-1)){
             ///en tercer apuntador indirecto , tercer nivel
-
+                reduEnlazIndCompl(res , archivo,valores,&superb, desp,nomAr,0);
             }else{
                 cout<<"la direccion es nula o el tipo esta mal"<<endl;
             }
@@ -258,6 +289,104 @@ void buildMulPath(ifstream &archivo ,SB superb, int dirBlo ,int dirAbsIno,vector
 
 
 
+///punteros : Indica la cantidad de punteros Indirectos intermedios a crear
+void reduEnlazIndCompl(int res ,ifstream &archivo,vector <char*> *valores,SB *superb,int desp,char* nomAr,int punteros){
+
+                BloqueApuntador tblo;
+                archivo.seekg(desp+res);
+                archivo.read((char*)&tblo, sizeof(BloqueApuntador));
+                ///lee el bloque apuntador indirecto
+                bool val=false;
+
+                int free=-1;
+                ///hace OR con todos los valores
+                for(int i=0;i<16;i++){
+                    bool vllen=tblo.b_pointers[i]!=0;
+                    if((tblo.b_pointers[i]==0)&&(free==-1)){
+                        free=i;
+                    }
+                    val=val||vllen;
+                }
+
+                ///verifica que no sea corrupto
+                if(val){
+                ///inicia generado de path actualiza path
+                    char * ss="-1*/";
+                    int dirNueva=-1;
+                    dirNueva= creaInBlEnla('2',archivo ,1, 1 , ss ,valores , superb , desp ,nomAr );
+
+                    if(dirNueva!=-1){
+                        if(punteros==0){
+                            tblo.b_pointers[free]=dirNueva;
+                        }else{
+                            int dirIndirec=buildMulIndirecto(nomAr,punteros,dirNueva,archivo,superb,desp);
+                            tblo.b_pointers[free]=dirIndirec;
+                        }
+
+
+
+
+                        ///guarda el bloque leido ya actualizado
+                        ofstream output_file(nomAr, ios::in);
+                        output_file.seekp(desp+res);
+                        output_file.write((char*)&tblo, sizeof(BloqueApuntador));
+                        output_file.close();
+                    }else{
+                        cout<<"Hubo un error al obtener la direccion"<<endl;
+                    }
+
+                }else{
+                    cout<<"El apuntador indirecto es corrupto"<<endl;
+                }
+
+
+}
+
+
+
+
+int buildMulIndirecto(char *nomAr,int cantidad,int direccion   , ifstream &archivo, SB * superb, int desp){
+    ///son puros apuntadores indirectos nuevos
+
+    int retorna=-1;
+
+    if((direccion!=-1 || direccion!=0)&&(cantidad>0)){
+        BloqueApuntador nuevo;
+        nuevo.b_pointers[0]=direccion;
+
+        int nuevadir=calcDbloque(archivo,(*superb),desp);
+        if(nuevadir!=-1){
+            ///para reenlzar en el bloque que le correspoda
+            retorna=((*superb).s_block_start)+(nuevadir*sizeof(BloqueApuntador));
+            ///marca si existe la ruta el bloque usado
+            MarkBMbloque(superb,desp,nuevadir,nomAr);
+            int tpos=desp+((*superb).s_block_start)+(nuevadir*sizeof(BloqueApuntador));
+            ofstream output_file(nomAr, ios::in);
+            output_file.seekp(tpos);
+            output_file.write((char*)&nuevo, sizeof(BloqueApuntador));
+            output_file.close();
+
+            buildMulIndirecto(nomAr,(cantidad-1),(tpos-desp), archivo, superb,desp);
+        }else{
+            cout<<"Error direccion "<<endl;
+        }
+
+    }else if(cantidad<=0){
+    }else{
+        cout<<"Direccion Nula o vacia"<<endl;
+    }
+
+
+
+
+
+    return retorna;
+
+}
+
+
+
+
 ///dir padre es la direccion relativa inodo a la particion
 ///dir origen lo mismo relativo
 ///nombres "nombre Padre / nombre Origen"
@@ -273,8 +402,9 @@ int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , ch
     ///verifica que exista dir Origen
     ///verifica que existe por lo menos 1 registro
     int retUltDirBlo=-1;
+    cout<<"creaEntra"<<endl;
     if(((*ruta).size())>0){
-
+    cout<<"pasa1creaEntra"<<endl;
         //(dirPadre!=-1)&&
         if((dirOrigen!=-1)){
             time_t now = time(0);
@@ -368,20 +498,23 @@ int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , ch
 
             ///saca de la lista
             vector <char *> temV=(*ruta);
+            cout<<"pasa1creaEntrax"<<endl;
             pop_front(temV);
+            cout<<"pasa1creaEntray"<<endl;
             (*ruta)=temV;
-
+            cout<<"pasa1creaEntraz"<<endl;
             ///ser vuelve a rellamar
             ///Dir Padre es la de origen , y la de Origen es la del ultimo inodo
             ///
 
-            creaInBlEnla('2',archivo , dirOrigen , ((*superb).s_inode_start)+(dirIno*sizeof(inodo)) , fusiNom ,ruta ,superb ,desp ,nomAr );
+            creaInBlEnla('1',archivo , dirOrigen , ((*superb).s_inode_start)+(dirIno*sizeof(inodo)) , fusiNom ,ruta ,superb ,desp ,nomAr );
 
 
         }else{
             cout<<"La direccion Padre u Origen o Size ruta esta mal"<<endl;
         }
     }
+    cout<<"salta a retornar"<<endl;
 
     return retUltDirBlo;
 

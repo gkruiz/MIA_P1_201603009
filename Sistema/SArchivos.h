@@ -107,7 +107,7 @@ void CMkfs(Mkfs info){
                         int residuo=numera%deno;
                         ///Es el numero de bloques
                         int N=(numera-residuo)/deno;
-                        ///Salta a la construccion de los bloques y el formateo del sistema de archivos
+                        ///Salta a la construccion de los inodos y el formateo del sistema de archivos
                         Formateo(nomarchivo ,N ,pmontar, tempoMBR,info.type);
 
                     }else{

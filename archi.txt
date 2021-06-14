@@ -1,0 +1,61 @@
+mount -path="/home/m/disco1.dk" -name=particion2
+
+mkfs -type=full -id=091a
+
+login -usr=root -pwd=123 -id=091a
+
+mkdir -p -path=/a/user
+
+mkdir -p -path=/b/maa
+mkdir -p -path=/c/desktop
+mkdir -p -path=/d/mbb
+mkdir -p -path=/e/desktop
+mkdir -p -path=/f/mcc
+mkdir -p -path=/g/desktop
+mkdir -p -path=/h/mdd
+mkdir -p -path=/i/desktop
+mkdir -p -path=/j/mee
+mkdir -p -path=/k/desktop
+mkdir -p -path=/l/mff
+
+
+
+mkdir -p -path=/ax/maa
+mkdir -p -path=/bx/desktop
+mkdir -p -path=/cx/mbb
+mkdir -p -path=/dx/desktop
+mkdir -p -path=/fx/mcc
+mkdir -p -path=/gx/desktop
+mkdir -p -path=/hx/mdd
+mkdir -p -path=/ix/desktop
+mkdir -p -path=/jx/mee
+mkdir -p -path=/kx/desktop
+mkdir -p -path=/lx/mff
+mkdir -p -path=/mx/mdd
+mkdir -p -path=/nx/desktop
+mkdir -p -path=/ox/mee
+mkdir -p -path=/ox/desktop
+mkdir -p -path=/qx/mff
+
+
+mkdir -p -path=/axy/maa
+mkdir -p -path=/bxy/desktop
+mkdir -p -path=/cxy/mbb
+mkdir -p -path=/dxy/desktop
+mkdir -p -path=/fxy/mcc
+mkdir -p -path=/gxy/desktop
+mkdir -p -path=/hxy/mdd
+mkdir -p -path=/ixy/desktop
+mkdir -p -path=/jxy/mee
+mkdir -p -path=/kxy/desktop
+mkdir -p -path=/lxy/mff
+mkdir -p -path=/mxy/mdd
+mkdir -p -path=/nxy/desktop
+mkdir -p -path=/oxy/mee
+mkdir -p -path=/oxy/desktop
+mkdir -p -path=/qxy/mff
+
+
+
+
+

@@ -26,7 +26,7 @@ void LoginSA(Login info);
 
 void ClaComando(int com){
 
-    //cout<<"Comando:"<<com<<endl;
+    cout<<"Comando:"<<com<<endl;
 
     switch(com){
         case 1:
@@ -72,6 +72,7 @@ void ClaComando(int com){
         break;
         case 10:
         ///MKFS
+
         Wfolder(info10);
 
         break;

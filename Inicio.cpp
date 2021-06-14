@@ -63,6 +63,7 @@ Mkdir info10;
 
 int main (){
 
+    cout<<sizeof(bool)<<endl;
     //rec9();
 
     Consol();
