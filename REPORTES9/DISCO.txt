@@ -1,9 +1,0 @@
-digraph G {
-subgraph cluster_frontend {
-
-"node0" [label = "{MBR|0%|136
-}"shape = "record"];
-"nodes0" [label = "{Particion1|99%|1048576
-}"shape = "record"];
-"nodef0" [label = "{Libre|0%|168
-}"shape = "record"];}}

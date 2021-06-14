@@ -199,7 +199,7 @@ void Formateo(char *nomarchivo,int N ,PARTITION particion,MBR tempoMBR,int tipof
     superBloque.s_inode_size=N*sizeof(inodo);///tamano del bloque inodo
     superBloque.s_block_size=3*N*sizeof(BloqueApuntador);///tamano del bloque bloques
     superBloque.s_first_ino=(sizeof(SB)+N+(3*N))+(2*sizeof(inodo));             ///apunta ultimo inodo libre
-    superBloque.s_first_blo=(sizeof(SB)+N+(3*N)+(N*sizeof(inodo)))+(2*sizeof(BloqueApuntador));///apunta ultimo bloque libre
+    superBloque.s_first_blo=(sizeof(SB)+N+(3*N)+(N*sizeof(inodo)))+(2*sizeof(BloqueCarpeta));///apunta ultimo bloque libre
     ///calculo inicio bitmap inodos ,empieza al final del superbloque
     superBloque.s_bm_inode_start=sizeof(SB);
     superBloque.s_bm_block_start=sizeof(SB)+N;

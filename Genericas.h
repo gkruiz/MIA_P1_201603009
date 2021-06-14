@@ -14,6 +14,30 @@ int longitud(char*cad){
 }
 
 
+
+char* componeC(char*cad){
+
+
+    char * nue=(char*)malloc(sizeof(char)*12);
+
+    int j=0;
+    int i=0;
+
+	if(cad!=0){
+        while(i!=12){
+            if(cad[i]>47&&cad[i]<126){
+                nue[j]=cad[i];
+                j++;
+            }
+			i++;
+		}
+	}
+
+
+	return nue;
+}
+
+
 bool Compare(char*cad1 ,char*cad2){
 	bool comparo=false;
 

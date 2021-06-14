@@ -16,6 +16,12 @@ int buildMulIndirecto(char *nomAr,int cantidad,int direccion   , ifstream &archi
 void reduEnlazIndCompl(int res ,ifstream &archivo,vector <char*> *valores,SB *superb,int desp,char* nomAr,int punteros);
 
 void repSB(SB superb);
+void repBMinoyblo(SB superb,ifstream &archivo,int desp);
+void conIndvIno(inodo inos,int i,vector <char *> * lista, int posm);
+void repInos(SB superb,ifstream &archivo, int desp);
+void conIndvBlo(BloqueCarpeta inos,int i,vector <char *> * lista, int posm);
+void repBloc(SB superb,ifstream &archivo, int desp);
+
 
 
 void Wfolder(Mkdir info){
@@ -503,10 +509,10 @@ int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , ch
                 output_file.write((char*)&carpeta, sizeof(BloqueCarpeta));
                 ///escribe inodo
                 ///Relativo disco / Relativo particion / Relativo Bloque Inodos
-                tpos=desp+((*superb).s_inode_start)+(dirIno*sizeof(inodo));
-                cout<<"Escribe inodo en p relativa:"<<((*superb).s_inode_start)+(dirIno*sizeof(inodo))<<endl;
-                output_file.seekp(tpos);
-                output_file.write((char*)&primero, sizeof(inodo));
+                //tpos=desp+((*superb).s_inode_start)+(dirIno*sizeof(inodo));
+                //cout<<"Escribe inodo en p relativa:"<<((*superb).s_inode_start)+(dirIno*sizeof(inodo))<<endl;
+                //output_file.seekp(tpos);
+                //output_file.write((char*)&primero, sizeof(inodo));
                 output_file.close();
 
                 ///Marca los bitmap de inodo y de bloque
@@ -530,8 +536,13 @@ int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , ch
                 ///Dir Padre es la de origen , y la de Origen es la del ultimo inodo
                 ///
 
-                creaInBlEnla('1',archivo , dirOrigen , ((*superb).s_inode_start)+(dirIno*sizeof(inodo)) , fusiNom ,ruta ,superb ,desp ,nomAr );
+                primero.i_block[0]=creaInBlEnla('1',archivo , dirOrigen , ((*superb).s_inode_start)+(dirIno*sizeof(inodo)) , fusiNom ,ruta ,superb ,desp ,nomAr );
 
+                ofstream output_file2(nomAr, ios::in);
+                tpos=desp+((*superb).s_inode_start)+(dirIno*sizeof(inodo));
+                output_file2.seekp(tpos);
+                output_file2.write((char*)&primero, sizeof(inodo));
+                output_file2.close();
 
 
             }else{
@@ -1135,15 +1146,20 @@ void reporteP(RE info){
 
                 if((superbloque.s_block_start!=-1)&&(superbloque.s_block_start!=0)){
                     int desp=sizeof(MBR)+pmontar.part_start;
-
+                    ifstream archivo(infoP.path, ios::binary);
                      repSB(superbloque);
+                     repBMinoyblo(superbloque,archivo,desp);
+                     repInos(superbloque,archivo,desp);
+                     repBloc(superbloque,archivo,desp);
+
+
                     //cout<<"Tamano de lista:"<<carpe.size()<<endl;
 
-                    ifstream input_file(infoP.path, ios::binary);
+
 
                         //buildMulPath(input_file ,superbloque, *bdireccion ,regre, &carpe , desp , infoP.path);
 
-                    input_file.close();
+                    archivo.close();
 
                 }else{
                     cout<<"La particion no esta formateada con ningun sistema de archivos"<<endl;
@@ -1236,6 +1252,180 @@ void repSB(SB superb){
 
 
 
+void repBMinoyblo(SB superb,ifstream &archivo,int desp){
+
+
+    int inibitMapInodos=superb.s_bm_inode_start;
+    int sizChar=sizeof(bool);
+    int canInodos=superb.s_inodes_count;
+
+    ofstream output_file("./REPORTES9/BitMapInodos.txt", ios::binary);
+    int sub=0;
+    for(int i=0;i<canInodos;i++){
+        int tpos=desp+inibitMapInodos+(i*sizChar);
+        bool temp;
+        archivo.seekg(tpos);
+        archivo.read((char*)&temp, sizChar);
+
+        char ts=0;
+
+        if(temp==0){
+            ts='0';
+            output_file.write((char*)&ts, sizeof(char));
+        }else{
+            ts='1';
+            output_file.write((char*)&ts, sizeof(char));
+        }
+
+        sub++;
+
+        if(sub==20){
+            ts='\n';
+            output_file.write((char*)&ts, sizeof(char));
+            sub=0;
+        }
+
+    }
+
+    output_file.close();
+
+
+    ///hace reporte bitma bloques
+
+
+    ofstream output_file2("./REPORTES9/BitMapBloques.txt", ios::binary);
+    sub=0;
+    int inibitMapBloques=superb.s_bm_block_start;
+    int canBloques=superb.s_blocks_count;
+
+
+    for(int i=0;i<canBloques;i++){
+        int tpos=desp+inibitMapBloques+(i*sizChar);
+        bool temp;
+        archivo.seekg(tpos);
+        archivo.read((char*)&temp, sizChar);
+
+        char ts=0;
+
+        if(temp==0){
+            ts='0';
+            output_file2.write((char*)&ts, sizeof(char));
+        }else{
+            ts='1';
+            output_file2.write((char*)&ts, sizeof(char));
+        }
+
+        sub++;
+
+        if(sub==20){
+            ts='\n';
+            output_file2.write((char*)&ts, sizeof(char));
+            sub=0;
+        }
+
+
+
+
+    }
+
+    output_file2.close();
+
+}
+
+
+
+
+
+void repInos(SB superb,ifstream &archivo, int desp){
+
+    int inousados=(superb.s_inodes_count)-(superb.s_free_inodes_count);
+
+
+    vector<char*>lista;
+
+    int dir=desp+superb.s_inode_start;
+    int tami=sizeof(inodo);
+
+    lista.push_back("digraph G { rankdir=LR;");
+
+    for(int i=0;i<inousados;i++){
+        int dirT=dir+(i*tami);
+        inodo temp;
+        archivo.seekg(dirT);
+        archivo.read((char*)&temp, tami);
+        conIndvIno(temp,i,&lista,dirT);
+        lista.push_back(" \n");
+    }
+
+        for(int i=0;i<inousados;i++){
+        lista.push_back("node");
+        lista.push_back(intToCharP(i));
+        lista.push_back("->node");
+        lista.push_back(intToCharP((i+1)));
+        lista.push_back(" \n");
+        }
+    lista.push_back("}");
+
+
+
+    ofstream output_file("./REPORTES9/RepInodos.txt", ios::binary);
+
+    for(int i=0;i<lista.size();i++){
+        char*tempos=lista[i];
+        int tamas=longitud(tempos);
+            for(int j=0;j<tamas;j++){
+                char ts=tempos[j];
+                output_file.write((char*)&ts, sizeof(ts));
+            }
+    }
+    output_file.close();
+
+    char*ufinal="dot -Tpdf ./REPORTES9/RepInodos.txt -o ./REPORTES9/RepInodos.pdf ";
+    system(ufinal);
+
+
+
+
+}
+
+
+
+void conIndvIno(inodo inos,int i,vector <char *> * lista, int posm){
+
+    char*gene="\"node";
+    (*lista).push_back(gene);
+    (*lista).push_back(intToCharP(i));
+    gene="\" [label = \"{{Inodo_";
+    (*lista).push_back(gene);
+    (*lista).push_back(intToCharP(posm));
+    gene=" |{{Nombre:| i_uid | i_gid |i_size|i_atime|i_ctime|i_mtime|p0|p1|p2|p3|p4|p5|p6|p7|p8|p9|p10|p11|p12|p13|p14|i_type|i_perm}|{Valor:|";
+    (*lista).push_back(gene);
+
+
+
+    (*lista).push_back(intToCharP(inos.i_uid));
+    (*lista).push_back("|");
+    (*lista).push_back(intToCharP(inos.i_gid));
+    (*lista).push_back("|");
+    (*lista).push_back(intToCharP(inos.i_size));
+    (*lista).push_back("|");
+    (*lista).push_back(intToCharP(inos.i_atime));
+    (*lista).push_back("|");
+    (*lista).push_back(intToCharP(inos.i_ctime));
+    (*lista).push_back("|");
+    (*lista).push_back(intToCharP(inos.i_mtime));
+    for(int j=0;j<15;j++){
+        (*lista).push_back("|");
+        (*lista).push_back(intToCharP(inos.i_block[j]));
+    }
+    (*lista).push_back("|");
+    (*lista).push_back(intToCharP(inos.i_type));
+    (*lista).push_back("|");
+    (*lista).push_back(intToCharP(inos.i_perm));
+
+    (*lista).push_back("}}}}\"shape = \"record\"];\n");
+
+}
 
 
 
@@ -1244,6 +1434,103 @@ void repSB(SB superb){
 
 
 
+
+
+
+///pendientes
+
+
+void repBloc(SB superb,ifstream &archivo, int desp){
+
+    int bloquesUsa=(superb.s_blocks_count)-(superb.s_free_blocks_count);
+
+
+    vector<char*>lista;
+
+    int dir=desp+superb.s_block_start;
+    int tami=sizeof(BloqueCarpeta);
+
+    lista.push_back("digraph G { rankdir=LR;");
+    cout<<"inicio bloques:"<<superb.s_block_start<<endl;
+    cout<<"tamano bloque carpeta:"<<tami<<endl;
+    cout<<"blo usados:"<<bloquesUsa<<endl;
+
+
+    for(int i=0;i<bloquesUsa;i++){
+        int dirT=dir+(i*tami);
+        BloqueCarpeta temp;
+        archivo.seekg(dirT);
+        archivo.read((char*)&temp, tami);
+        conIndvBlo(temp,i,&lista,dirT);
+        lista.push_back(" \n");
+    }
+
+    for(int i=0;i<bloquesUsa;i++){
+        lista.push_back("node");
+        lista.push_back(intToCharP(i));
+        lista.push_back("->node");
+        lista.push_back(intToCharP((i+1)));
+        lista.push_back(" \n");
+    }
+    lista.push_back("}");
+
+
+
+    ofstream output_file("./REPORTES9/RepBloques.txt", ios::binary);
+
+    for(int i=0;i<lista.size();i++){
+        char*tempos=lista[i];
+        int tamas=longitud(tempos);
+            for(int j=0;j<tamas;j++){
+                char ts=tempos[j];
+                output_file.write((char*)&ts, sizeof(ts));
+            }
+    }
+    output_file.close();
+
+    char*ufinal="dot -Tpdf ./REPORTES9/RepBloques.txt -o ./REPORTES9/RepBloques.pdf ";
+    system(ufinal);
+
+
+
+
+}
+
+
+
+void conIndvBlo(BloqueCarpeta inos,int i,vector <char *> * lista, int posm){
+
+    char*gene="\"node";
+    (*lista).push_back(gene);
+    (*lista).push_back(intToCharP(i));
+    gene="\" [label = \"{{Inodo_";
+    (*lista).push_back(gene);
+    (*lista).push_back(intToCharP(posm));
+    gene=" |{{Nombre:| b_name0 | b_inodo0 | b_name1 | b_inodo1| b_name2 | b_inodo2| b_name3 | b_inodo3}|{Valor:|";
+    (*lista).push_back(gene);
+
+    cout<<"nombre:"<<(inos.b_content[0].b_name)<<endl;
+
+    (*lista).push_back(componeC(inos.b_content[0].b_name));
+    (*lista).push_back("|");
+    (*lista).push_back(intToCharP(inos.b_content[0].b_inodo));
+
+    (*lista).push_back(componeC(inos.b_content[1].b_name));
+    (*lista).push_back("|");
+    (*lista).push_back(intToCharP(inos.b_content[1].b_inodo));
+
+    (*lista).push_back(componeC(inos.b_content[2].b_name));
+    (*lista).push_back("|");
+    (*lista).push_back(intToCharP(inos.b_content[2].b_inodo));
+
+    (*lista).push_back(componeC(inos.b_content[3].b_name));
+    (*lista).push_back("|");
+    (*lista).push_back(intToCharP(inos.b_content[3].b_inodo));
+
+
+    (*lista).push_back("}}}}\"shape = \"record\"];\n");
+
+}
 
 
 
