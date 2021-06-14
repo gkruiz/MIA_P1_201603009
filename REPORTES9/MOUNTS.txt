@@ -1,0 +1,1 @@
+digraph G {subgraph cluster_frontend {"node0" [label = "{MOUNT|{{Info:|Id:| Path: | Nombre: }|{Valor:|091a|/home/m/discog.dk|particionxx1}}}"shape = "record"];}}

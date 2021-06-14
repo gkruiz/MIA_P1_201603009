@@ -77,7 +77,7 @@ void CMkfs(Mkfs info){
                 cout<<"La particion no existe en el disco duro"<<endl;
             }
 
-
+            cout<<"INICIA CALCULOS"<<endl;
             ///inicia con los calculos de los bloques
             if(pmontar.part_start!=-1){
                 int tipoSis=info.fs;
@@ -194,7 +194,7 @@ void Formateo(char *nomarchivo,int N ,PARTITION particion,MBR tempoMBR,int tipof
     superBloque.s_free_blocks_count=(3*N)-2;/// lo mismo 2 bloques usados
     superBloque.s_mtime=0;
     superBloque.s_umtime=0;
-    superBloque.s_mnt_count=0;
+    superBloque.s_mnt_count=1;
     superBloque.s_magic=0xEF53;
     superBloque.s_inode_size=N*sizeof(inodo);///tamano del bloque inodo
     superBloque.s_block_size=3*N*sizeof(BloqueApuntador);///tamano del bloque bloques
@@ -269,12 +269,12 @@ void Formateo(char *nomarchivo,int N ,PARTITION particion,MBR tempoMBR,int tipof
     ///si N muy grande error
 
     ///bitmap inodos
-    char ar[3]={0};
+    bool ar[3]={0};
     ar[0]=1;
     ar[1]=1;
     ar[2]=0;
     ///bitmap bloques
-    char ar2[3]={0};
+    bool ar2[3]={0};
     ar2[0]=1;
     ar2[1]=1;
     ar2[2]=0;

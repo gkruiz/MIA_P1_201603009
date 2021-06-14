@@ -1,4 +1,4 @@
-mount -path="/home/m/disco1.dk" -name=particion2
+mount -path="/home/m/discog.dk" -name=particionxx1
 
 mkfs -type=full -id=091a
 
@@ -19,7 +19,6 @@ mkdir -p -path=/k/desktop
 mkdir -p -path=/l/mff
 
 
-
 mkdir -p -path=/ax/maa
 mkdir -p -path=/bx/desktop
 mkdir -p -path=/cx/mbb
@@ -34,7 +33,7 @@ mkdir -p -path=/lx/mff
 mkdir -p -path=/mx/mdd
 mkdir -p -path=/nx/desktop
 mkdir -p -path=/ox/mee
-mkdir -p -path=/ox/desktop
+mkdir -p -path=/px/desktop
 mkdir -p -path=/qx/mff
 
 
@@ -54,6 +53,91 @@ mkdir -p -path=/nxy/desktop
 mkdir -p -path=/oxy/mee
 mkdir -p -path=/oxy/desktop
 mkdir -p -path=/qxy/mff
+
+
+
+mkdir -p -path=/axyz/maa
+mkdir -p -path=/bxyz/desktop
+mkdir -p -path=/cxyz/mbb
+mkdir -p -path=/dxyz/desktop
+mkdir -p -path=/fxyz/mcc
+mkdir -p -path=/gxyz/desktop
+mkdir -p -path=/hxyz/mdd
+mkdir -p -path=/ixyz/desktop
+mkdir -p -path=/jxyz/mee
+mkdir -p -path=/kxyz/desktop
+mkdir -p -path=/lxyz/mff
+mkdir -p -path=/mxyz/mdd
+mkdir -p -path=/nxyz/desktop
+mkdir -p -path=/oxyz/mee
+mkdir -p -path=/oxyz/desktop
+mkdir -p -path=/qxyz/mff
+
+
+
+
+
+mkdir -p -path=/vaxy/maa
+mkdir -p -path=/vbxy/desktop
+mkdir -p -path=/vcxy/mbb
+mkdir -p -path=/vdxy/desktop
+mkdir -p -path=/vfxy/mcc
+mkdir -p -path=/vgxy/desktop
+mkdir -p -path=/vhxy/mdd
+mkdir -p -path=/vixy/desktop
+mkdir -p -path=/vjxy/mee
+mkdir -p -path=/vkxy/desktop
+mkdir -p -path=/vlxy/mff
+mkdir -p -path=/vmxy/mdd
+mkdir -p -path=/vnxy/desktop
+mkdir -p -path=/voxy/mee
+mkdir -p -path=/voxy/desktop
+mkdir -p -path=/vqxy/mff
+
+
+
+
+
+
+mkdir -p -path=/naxy/maa
+mkdir -p -path=/nbxy/desktop
+mkdir -p -path=/ncxy/mbb
+mkdir -p -path=/ndxy/desktop
+mkdir -p -path=/nfxy/mcc
+mkdir -p -path=/ngxy/desktop
+mkdir -p -path=/nhxy/mdd
+mkdir -p -path=/nixy/desktop
+mkdir -p -path=/njxy/mee
+mkdir -p -path=/nkxy/desktop
+mkdir -p -path=/nlxy/mff
+mkdir -p -path=/nmxy/mdd
+mkdir -p -path=/nnxy/desktop
+mkdir -p -path=/noxy/mee
+mkdir -p -path=/noxy/desktop
+mkdir -p -path=/nqxy/mff
+
+
+
+
+mkdir -p -path=/waxy/maa
+mkdir -p -path=/wbxy/desktop
+mkdir -p -path=/wcxy/mbb
+mkdir -p -path=/wdxy/desktop
+mkdir -p -path=/wfxy/mcc
+mkdir -p -path=/wgxy/desktop
+mkdir -p -path=/whxy/mdd
+mkdir -p -path=/wixy/desktop
+mkdir -p -path=/wjxy/mee
+mkdir -p -path=/wkxy/desktop
+mkdir -p -path=/wlxy/mff
+mkdir -p -path=/wmxy/mdd
+mkdir -p -path=/wnxy/desktop
+mkdir -p -path=/woxy/mee
+mkdir -p -path=/woxy/desktop
+mkdir -p -path=/wqxy/mff
+
+
+
 
 
 

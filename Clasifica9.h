@@ -55,6 +55,7 @@ void ClaComando(int com){
         repo2(info6);
         repo3(info6);
         repo4();
+        reporteP(info6);
         break;
         case 7:
         ///EXEC

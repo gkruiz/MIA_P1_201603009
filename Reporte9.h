@@ -2,6 +2,9 @@
 
 vector<char*> escriPext(vector<char*>li1,bool ind1,bool ind2,bool ind3,bool ind4,MBR tempoMBR,vector<EBR>leidos,PARTITION extendida);
 
+void reporteP(RE info);
+
+
 
 void repo(RE info){
 
@@ -148,7 +151,7 @@ void repo(RE info){
 
 
     lista.push_back("}}");
-    ofstream output_file("MBRS.txt", ios::binary);
+    ofstream output_file("./REPORTES9/MBRS.txt", ios::binary);
 
     for(int i=0;i<lista.size();i++){
         char*tempos=lista[i];
@@ -164,7 +167,7 @@ void repo(RE info){
 
     output_file.close();
 
-    char*ufinal="dot -Tpdf MBRS.txt -o MBRS.pdf ";
+    char*ufinal="dot -Tpdf ./REPORTES9/MBRS.txt -o ./REPORTES9/MBRS.pdf ";
     system(ufinal);
 
 
@@ -254,7 +257,7 @@ void repo2(RE info){
 
 
     lista.push_back("}}");
-    ofstream output_file("EBRS.txt", ios::binary);
+    ofstream output_file("./REPORTES9/EBRS.txt", ios::binary);
 
     for(int i=0;i<lista.size();i++){
         char*tempos=lista[i];
@@ -268,7 +271,7 @@ void repo2(RE info){
 
     output_file.close();
 
-    char*ufinal="dot -Tpdf EBRS.txt -o EBRS.pdf ";
+    char*ufinal="dot -Tpdf ./REPORTES9/EBRS.txt -o ./REPORTES9/EBRS.pdf ";
     system(ufinal);
 
     }else{
@@ -443,7 +446,7 @@ void repo3(RE info){
 
 
     lista.push_back("}}");
-    ofstream output_file("DISCO.txt", ios::binary);
+    ofstream output_file("./REPORTES9/DISCO.txt", ios::binary);
 
     for(int i=0;i<lista.size();i++){
         char*tempos=lista[i];
@@ -456,7 +459,7 @@ void repo3(RE info){
 
 
     output_file.close();
-    char*ufinal="dot -Tpdf DISCO.txt -o DISCO.pdf ";
+    char*ufinal="dot -Tpdf ./REPORTES9/DISCO.txt -o ./REPORTES9/DISCO.pdf ";
     system(ufinal);
 
     }else{
@@ -500,7 +503,7 @@ void repo4(){
 
 
         lista.push_back("}}");
-        ofstream output_file("MOUNTS.txt", ios::binary);
+        ofstream output_file("./REPORTES9/MOUNTS.txt", ios::binary);
 
         for(int i=0;i<lista.size();i++){
             char*tempos=lista[i];
@@ -514,7 +517,7 @@ void repo4(){
 
         output_file.close();
 
-        char*ufinal="dot -Tpdf MOUNTS.txt -o MOUNTS.pdf ";
+        char*ufinal="dot -Tpdf ./REPORTES9/MOUNTS.txt -o ./REPORTES9/MOUNTS.pdf ";
         system(ufinal);
 
 
