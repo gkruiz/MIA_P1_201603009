@@ -21,7 +21,11 @@ void conIndvIno(inodo inos,int i,vector <char *> * lista, int posm);
 void repInos(SB superb,ifstream &archivo, int desp);
 void conIndvBlo(BloqueCarpeta inos,int i,vector <char *> * lista, int posm);
 void repBloc(SB superb,ifstream &archivo, int desp);
-
+void conIndvBloIndirec(BloqueApuntador inos,int i,vector <char *> * lista, int posm);
+void recorridoBloqueRep(ifstream &archivo ,int direccion,int dezpla , vector <char *> * lista ,int old);
+void recorridoInodoRep(ifstream &archivo ,int direccion, int dezpla , vector <char *> * lista);
+void recorridoBloqueIndirectoRep(ifstream &archivo ,int direccion, int dezpla , vector <char *> * lista );
+void RepoArbol(SB superb,ifstream &archivo, int desp);
 
 
 void Wfolder(Mkdir info){
@@ -183,7 +187,7 @@ void buildMulPath(ifstream &archivo ,SB stemp, int dirBlo ,int dirAbsIno,vector 
                     char * NHij= ArrtoCharP(tblo.b_content[1].b_name);
                     char * fusiNom=UneChar(NPadr,diago);
                     fusiNom=UneChar(fusiNom,NHij);
-                    cout<<"salunido:"<<fusiNom<<endl;
+                    //cout<<"salunido:"<<fusiNom<<endl;
                     int dirNueva=-1;
 
                     if(tblo.b_content[2].b_inodo==-1){
@@ -221,7 +225,7 @@ void buildMulPath(ifstream &archivo ,SB stemp, int dirBlo ,int dirAbsIno,vector 
 
                 if(dirNueva!=-1){
                     if(res<=11){
-                        cout<<"VALOR DE RES:"<<res<<endl;
+                      //  cout<<"VALOR DE RES:"<<res<<endl;
                         temp.i_block[res]=dirNueva;
                     }else if(res==12){
                         dirIndirecto=buildMulIndirecto(nomAr,1,dirNueva,archivo,&superb,desp);
@@ -235,7 +239,7 @@ void buildMulPath(ifstream &archivo ,SB stemp, int dirBlo ,int dirAbsIno,vector 
                     }else{
                         cout<<"Error posicion"<<endl;
                     }
-                     cout<<"sale res:"<<endl;
+                  //   cout<<"sale res:"<<endl;
                     ///guarda el bloque leido ya actualizado en el INODO
                     ofstream output_file(nomAr, ios::in);
                     output_file.seekp(dirAbsIno);
@@ -259,6 +263,8 @@ void buildMulPath(ifstream &archivo ,SB stemp, int dirBlo ,int dirAbsIno,vector 
 
             }else if(((*tp)==5)&&(res!=-1)){
             ///en segundo apuntador indirecto , segundo nivel
+                cout<<"GUARDARA EN INDIRECTO 2----------------------"<<endl;
+                cout<<"Direccion res:"<<res<<endl;
                 reduEnlazIndCompl(res , archivo,valores,&superb, desp,nomAr,0);
             }else if(((*tp)==6)&&(res!=-1)){
             ///en tercer apuntador indirecto , primer nivel
@@ -321,6 +327,7 @@ void reduEnlazIndCompl(int res ,ifstream &archivo,vector <char*> *valores,SB *su
                 BloqueApuntador tblo;
                 archivo.seekg(desp+res);
                 archivo.read((char*)&tblo, sizeof(BloqueApuntador));
+                cout<<"Dir real:"<<(desp+res)<<endl;
                 ///lee el bloque apuntador indirecto
                 bool val=false;
 
@@ -343,6 +350,11 @@ void reduEnlazIndCompl(int res ,ifstream &archivo,vector <char*> *valores,SB *su
 
                     if(dirNueva!=-1){
                         if(punteros==0){
+                            cout<<"Puntero0:"<<endl;
+                            cout<<"dirCarpetasNuevo:"<<dirNueva<<endl;
+                            cout<<"posicion en indirecto:"<<free<<endl;
+                            cout<<"dir Indir Abs:"<<(desp+res)<<endl;
+
                             tblo.b_pointers[free]=dirNueva;
                         }else{
                             int dirIndirec=buildMulIndirecto(nomAr,punteros,dirNueva,archivo,superb,desp);
@@ -393,12 +405,13 @@ int buildMulIndirecto(char *nomAr,int cantidad,int direccion   , ifstream &archi
             output_file.write((char*)&nuevo, sizeof(BloqueApuntador));
             output_file.close();
 
-            buildMulIndirecto(nomAr,(cantidad-1),(tpos-desp), archivo, superb,desp);
+            retorna=buildMulIndirecto(nomAr,(cantidad-1),(tpos-desp), archivo, superb,desp);
         }else{
             cout<<"Error direccion "<<endl;
         }
 
     }else if(cantidad<=0){
+        retorna=direccion;
     }else{
         cout<<"Direccion Nula o vacia"<<endl;
     }
@@ -429,9 +442,9 @@ int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , ch
     ///verifica que exista dir Origen
     ///verifica que existe por lo menos 1 registro
     int retUltDirBlo=-1;
-    cout<<"creaEntra"<<endl;
+   // cout<<"creaEntra"<<endl;
     if(((*ruta).size())>0){
-    cout<<"pasa1creaEntra"<<endl;
+    //cout<<"pasa1creaEntra"<<endl;
         //(dirPadre!=-1)&&
         if((dirOrigen!=-1)){
             time_t now = time(0);
@@ -439,8 +452,8 @@ int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , ch
             int dirBlo = calcDbloque(archivo,(*superb),desp);///es numero no direccion
             int dirIno = calcDinodo(archivo,(*superb),desp);
 
-            cout<<"dirblo"<<dirBlo<<endl;
-            cout<<"dirino"<<dirIno<<endl;
+          //  cout<<"dirblo"<<dirBlo<<endl;
+          //  cout<<"dirino"<<dirIno<<endl;
 
 
             ///valida que exista direccion inodo y bloque
@@ -478,16 +491,18 @@ int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , ch
                     carpeta.b_content[0]=info;
 
                     ///Apuntador inodo Origen:
+                     Content info1;
                     text=nombrePyO[1];
-                    strcpy(info.b_name, text);
-                    info.b_inodo=dirOrigen;
-                    carpeta.b_content[1]=info;
+                    strcpy(info1.b_name, text);
+                    info1.b_inodo=dirOrigen;
+                    carpeta.b_content[1]=info1;
 
                     ///Apuntador inodo hijo:
+                     Content info2;
                     text=(*ruta)[0];
-                    strcpy(info.b_name, text);
-                    info.b_inodo=((*superb).s_inode_start)+(dirIno*sizeof(inodo));
-                    carpeta.b_content[2]=info;
+                    strcpy(info2.b_name, text);
+                    info2.b_inodo=((*superb).s_inode_start)+(dirIno*sizeof(inodo));
+                    carpeta.b_content[2]=info2;
 
                 }else{
 
@@ -523,20 +538,23 @@ int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , ch
                 char * diago="*";
                 char * fusiNom=UneChar(nombrePyO[1],diago);
                 fusiNom=UneChar(fusiNom,(*ruta)[0]);
-                cout<<"salunido:"<<fusiNom<<endl;
+                //cout<<"salunido:"<<fusiNom<<endl;
 
                 ///saca de la lista
                 vector <char *> temV=(*ruta);
-                cout<<"pasa1creaEntrax"<<endl;
+                //cout<<"pasa1creaEntrax"<<endl;
                 pop_front(temV);
-                cout<<"pasa1creaEntray"<<endl;
+                //cout<<"pasa1creaEntray"<<endl;
                 (*ruta)=temV;
-                cout<<"pasa1creaEntraz"<<endl;
+               // cout<<"pasa1creaEntraz"<<endl;
                 ///ser vuelve a rellamar
                 ///Dir Padre es la de origen , y la de Origen es la del ultimo inodo
                 ///
 
-                primero.i_block[0]=creaInBlEnla('1',archivo , dirOrigen , ((*superb).s_inode_start)+(dirIno*sizeof(inodo)) , fusiNom ,ruta ,superb ,desp ,nomAr );
+                int reci=creaInBlEnla('1',archivo , dirOrigen , ((*superb).s_inode_start)+(dirIno*sizeof(inodo)) , fusiNom ,ruta ,superb ,desp ,nomAr );
+                if(reci!=-1&&reci>0){
+                    primero.i_block[0]=reci;
+                }
 
                 ofstream output_file2(nomAr, ios::in);
                 tpos=desp+((*superb).s_inode_start)+(dirIno*sizeof(inodo));
@@ -562,7 +580,7 @@ int creaInBlEnla(char tipo,ifstream &archivo , int dirPadre , int dirOrigen , ch
             cout<<"La direccion Padre u Origen o Size ruta esta mal"<<endl;
         }
     }
-    cout<<"salta a retornar"<<endl;
+    //cout<<"salta a retornar"<<endl;
 
     return retUltDirBlo;
 
@@ -643,8 +661,8 @@ int calcDinodo(ifstream &archivo ,SB superb , int desp){
     int inibitMapInodos=superb.s_bm_inode_start;
     int sizChar=sizeof(bool);
     int canInodos=superb.s_inodes_count;
-    cout<<"TOTAL BLOQUES:"<<superb.s_blocks_count<<endl;
-    cout<<"TOTAL INODOS:"<<superb.s_inodes_count<<endl;
+    //cout<<"TOTAL BLOQUES:"<<superb.s_blocks_count<<endl;
+    //cout<<"TOTAL INODOS:"<<superb.s_inodes_count<<endl;
 
     for(int i=0;i<canInodos;i++){
         int tpos=desp+inibitMapInodos+(i*sizChar);
@@ -729,9 +747,9 @@ int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo){
         BloqueCarpeta temp;
         input_file.seekg(desp+ino.i_block[0]);
         input_file.read((char*)&temp, sizeof(BloqueCarpeta));
-        cout<<"iblock:"<<ino.i_block[0]<<endl;
-        cout<<"pri:"<<temp.b_content[0].b_name<<endl;
-        cout<<"segu:"<<temp.b_content[1].b_name<<endl;
+        ///cout<<"iblock:"<<ino.i_block[0]<<endl;
+        //cout<<"pri:"<<temp.b_content[0].b_name<<endl;
+        //cout<<"segu:"<<temp.b_content[1].b_name<<endl;
 
 
         if(longitud(temp.b_content[0].b_name)>0&&longitud(temp.b_content[1].b_name)>0){
@@ -787,12 +805,8 @@ int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo){
 
         for(int i=0;i<16;i++){
             ///primero busca espacio libre Pindirecto primer nivel , numero 13
-            if(temp.b_pointers[i]==0){
-                retorna=ino.i_block[13];
-                (*tipo)=4;
-                break;
-            }else{
-            ///si esta ocupado , entra y busca en el segundo nivel , numero 13
+            if(temp.b_pointers[i]!=0){
+                ///si esta ocupado , entra y busca en el segundo nivel , numero 13
                 BloqueApuntador temp2;
                 input_file.seekg(desp+temp.b_pointers[i]);
                 input_file.read((char*)&temp2 , sizeof(BloqueApuntador));
@@ -804,6 +818,11 @@ int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo){
                         break;
                     }
                 }
+
+            }else{
+                retorna=ino.i_block[13];
+                (*tipo)=4;
+                break;
 
             }
         }
@@ -1006,7 +1025,7 @@ int recorridoInodo(ifstream &archivo ,int direccion, vector <char *> * valores ,
 
     }else{
         retorna=-1*direccion;
-        cout<<"Fin lectura"<<endl;
+        //cout<<"Fin lectura"<<endl;
     }
 
 
@@ -1048,7 +1067,7 @@ int recorridoBloqueIndirecto(ifstream &archivo ,int direccion, vector <char *> *
 
     }else{
         //retorna=-1*direccion;
-        cout<<"Fin lectura bloqueIndirecto?"<<endl;
+        //cout<<"Fin lectura bloqueIndirecto?"<<endl;
     }
 
     return retorna;
@@ -1088,10 +1107,10 @@ int recorridoBloque(ifstream &archivo ,int direccion, vector <char *> * valores 
                             vector<char *> cambVal=(*valores);
                             pop_front(cambVal);
                             (*valores)=cambVal;
-                            cout<<"t bloque quita:"<<cambVal.size()<<endl;
-                            cout<<"i:"<<i<<endl;
-                            cout<<"t content name?:"<<temp.b_content[i].b_name<<endl;
-                            cout<<"t content inodo?:"<<temp.b_content[i].b_inodo<<endl;
+                            //cout<<"t bloque quita:"<<cambVal.size()<<endl;
+                            //cout<<"i:"<<i<<endl;
+                            //cout<<"t content name?:"<<temp.b_content[i].b_name<<endl;
+                            //cout<<"t content inodo?:"<<temp.b_content[i].b_inodo<<endl;
 
 
                             int posiciont=dezpla+temp.b_content[i].b_inodo ;
@@ -1113,7 +1132,7 @@ int recorridoBloque(ifstream &archivo ,int direccion, vector <char *> * valores 
 
     }else{
         retorna=-1*direccion;
-        cout<<"Fin lectura bloque?"<<endl;
+        //cout<<"Fin lectura bloque?"<<endl;
     }
 
     return retorna;
@@ -1146,12 +1165,12 @@ void reporteP(RE info){
 
                 if((superbloque.s_block_start!=-1)&&(superbloque.s_block_start!=0)){
                     int desp=sizeof(MBR)+pmontar.part_start;
-                    ifstream archivo(infoP.path, ios::binary);
+                    ifstream archivo(infoP.path, ios::in);
                      repSB(superbloque);
                      repBMinoyblo(superbloque,archivo,desp);
                      repInos(superbloque,archivo,desp);
                      repBloc(superbloque,archivo,desp);
-
+                     RepoArbol(superbloque,archivo,desp);
 
                     //cout<<"Tamano de lista:"<<carpe.size()<<endl;
 
@@ -1431,6 +1450,274 @@ void conIndvIno(inodo inos,int i,vector <char *> * lista, int posm){
 
 
 
+void RepoArbol(SB superb,ifstream &archivo, int desp){
+
+
+    vector <char *> lista;
+
+    int inicio= desp + superb.s_inode_start;
+
+    lista.push_back("digraph G { rankdir=LR;");
+        recorridoInodoRep(archivo,inicio,desp,&lista);
+    lista.push_back("}");
+
+
+    ofstream output_file("./REPORTES9/RepArbol.txt", ios::binary);
+
+    for(int i=0;i<lista.size();i++){
+        char*tempos=lista[i];
+        int tamas=longitud(tempos);
+            for(int j=0;j<tamas;j++){
+                char ts=tempos[j];
+                output_file.write((char*)&ts, sizeof(ts));
+            }
+    }
+    output_file.close();
+
+    char*ufinal="dot -Tpdf ./REPORTES9/RepArbol.txt -o ./REPORTES9/RepArbol.pdf ";
+    system(ufinal);
+}
+
+
+
+
+
+///busca de moento solo carpeta ruta
+///finaliza con un inodo
+///archivo para usar
+///direccion es donde leera el  nuevo inodo
+///valores lista de nombres de la ruta
+///dezpla desplazamiento relativo a la particion
+///bdir direccion del ultimo bloque leido
+void recorridoInodoRep(ifstream &archivo ,int direccion, int dezpla , vector <char *> * lista){
+
+        cout<<"Entra Rep Inodo"<<endl;
+        inodo temp;
+
+        archivo.seekg(direccion);
+        archivo.read((char*)&temp, sizeof(inodo));
+
+        ///sirve para ver si el inodo se leyo bien
+        if((temp.i_type==1||temp.i_type==2)){
+            ///valida que sea una carpeta
+            if(temp.i_type==1){
+                ///Escribe el inodo para el reporte
+                conIndvIno(temp,direccion,lista, direccion);
+                //cout<<"Es una carpeta"<<endl;
+                ///inicia a ver si existen apuntadores creados en el inodo
+                cout<<"PASA APUNTADOR EN INODO"<<endl;
+                for(int i=0;i<12;i++){
+                    if(temp.i_block[i]!=0){
+                    cout<<"Esta en i:"<<i<<endl;
+
+                    ///existe un apuntador bloque a carpeta o archivo
+                    int posiciont=dezpla+temp.i_block[i];
+                    cout<<"Salta DIRINODO ABS:"<<direccion<<endl;
+                    cout<<"Salta DIRBLOQUE ABS:"<<posiciont<<endl;
+                    (*lista).push_back(" node");
+                    (*lista).push_back(intToCharP(direccion));
+                    (*lista).push_back("->node");
+                    (*lista).push_back(intToCharP(posiciont));
+                    (*lista).push_back(" ");
+
+                    if(i==0){
+                        recorridoBloqueRep(archivo,posiciont,dezpla,lista,1);
+                    }else{
+                        recorridoBloqueRep(archivo,posiciont,dezpla,lista,0);
+                    }
+
+
+                        ///construir multiple apuntadores
+                    }
+                }
+
+                ///si retorna aun no encuentra pasa a nodos simple , doble , y triple
+
+
+
+
+                ///apundador simple
+                cout<<"PASA APUNTADOR SIMPLE"<<endl;
+                if((temp.i_block[12]!=0)){
+                    int posiciont=dezpla+temp.i_block[12] ;
+                    cout<<"Salta DIRINODO ABS 12:"<<direccion<<endl;
+                    cout<<"Salta DIRIndire ABS 12:"<<posiciont<<endl;
+                    recorridoBloqueIndirectoRep(archivo, posiciont ,dezpla,lista);
+                }
+
+
+
+
+
+                ///apuntador doble
+                cout<<"PASA APUNTADOR DOBLE"<<endl;
+                if((temp.i_block[13]!=0)){
+                    BloqueApuntador tempx;
+
+                    archivo.seekg(temp.i_block[13]);
+                    archivo.read((char*)&tempx, sizeof(BloqueApuntador));
+
+                    for(int i=0;i<16;i++){
+                        if(tempx.b_pointers[i]!=0){
+                            int posiciont=dezpla+tempx.b_pointers[i] ;
+                            cout<<"Salta DIRINODO ABS 13:"<<direccion<<endl;
+                            cout<<"Salta DIRIndire ABS 13:"<<posiciont<<endl;
+                            recorridoBloqueIndirectoRep(archivo, posiciont ,dezpla,lista);
+
+
+                        }
+                    }
+
+                }
+
+
+
+
+                ///apuntador triple
+                cout<<"PASA APUNTADOR TRIPLE"<<endl;
+                if((temp.i_block[14]!=0)){
+
+                    BloqueApuntador tempx;
+
+                    archivo.seekg(temp.i_block[14]);
+                    archivo.read((char*)&tempx, sizeof(BloqueApuntador));
+
+                    for(int i=0;i<16;i++){
+                        if(tempx.b_pointers[i]!=0){
+                            BloqueApuntador tempx2;
+
+                            archivo.seekg(tempx.b_pointers[i]);
+                            archivo.read((char*)&tempx2, sizeof(BloqueApuntador));
+
+
+                            for(int j=0;j<16;j++){
+                                if(tempx2.b_pointers[j]!=0){
+                                    int posiciont=dezpla+tempx2.b_pointers[j] ;
+                                    cout<<"Salta DIRINODO ABS 14:"<<direccion<<endl;
+                                    cout<<"Salta DIRIndire ABS 14:"<<posiciont<<endl;
+                                    recorridoBloqueIndirectoRep(archivo, posiciont ,dezpla,lista);
+
+                                }
+                            }
+
+
+
+                        }
+                    }
+
+                }
+
+
+            }else{
+
+                cout<<"Es un archivo"<<endl;
+            }
+
+        }else{
+            cout<<"El inodo leido esta corrupto"<<endl;
+
+        }
+
+
+
+
+}
+
+
+
+///verificar si todos vacios eliminar direccion
+///en apuntadores varios 1 2 3
+void recorridoBloqueIndirectoRep(ifstream &archivo ,int direccion, int dezpla , vector <char *> * lista ){
+
+
+    BloqueApuntador temp;
+
+    archivo.seekg(direccion);
+    archivo.read((char*)&temp, sizeof(BloqueApuntador));
+
+    conIndvBloIndirec(temp , direccion ,lista,direccion);
+
+        ///inicia a ver si conincide el nombre y la ruta
+        for(int i=0;i<16;i++){
+
+            if(temp.b_pointers[i]!=0){
+
+                int posiciont=dezpla+temp.b_pointers[i] ;
+                cout<<"DIR INDI ABS:"<<direccion<<endl;
+                cout<<"DIR BLO ABS:"<<posiciont<<endl;
+
+                 (*lista).push_back(" node");
+                    (*lista).push_back(intToCharP(direccion));
+                    (*lista).push_back("->node");
+                    (*lista).push_back(intToCharP(posiciont));
+                    (*lista).push_back(" ");
+                recorridoBloqueRep(archivo,posiciont,dezpla,lista,0);
+            }
+        }
+
+
+}
+
+
+
+
+void recorridoBloqueRep(ifstream &archivo ,int direccion,int dezpla , vector <char *> * lista ,int old){
+
+        cout<<"Entra Bloque Rep"<<endl;
+        BloqueCarpeta temp;
+
+        archivo.seekg(direccion);
+        archivo.read((char*)&temp, sizeof(BloqueCarpeta));
+
+        ///sirve para ver si el bloque se leyo bien
+        if((temp.b_content[0].b_inodo!=-1)||(temp.b_content[1].b_inodo!=-1)||(temp.b_content[2].b_inodo!=-1)||(temp.b_content[3].b_inodo!=-1)){
+
+                ///escribe el bloque para reporte de arbol
+                conIndvBlo(temp ,direccion , lista, direccion );
+
+                ///inicia a ver si conincide el nombre y la ruta
+                int camb=0;
+                if(old==1){
+                    camb=2;
+                }
+                for(int i=camb;i<4;i++){
+                    if(temp.b_content[i].b_inodo!=-1){
+                            int posiciont=dezpla+temp.b_content[i].b_inodo ;
+                            cout<<"Nombre Bloque:"<<ArrtoCharP(temp.b_content[i].b_name) <<endl;
+                            cout<<"Direcc a Inod:"<<temp.b_content[i].b_inodo <<endl;
+                                (*lista).push_back(" node");
+                                (*lista).push_back(intToCharP(direccion));
+                                (*lista).push_back("->node");
+                                (*lista).push_back(intToCharP(posiciont));
+                                (*lista).push_back(" ");
+                                 recorridoInodoRep(archivo ,posiciont, dezpla,lista);
+                                 ///CONSTRUYE APUNTADORES A INODOS
+
+
+                    }
+
+                }
+
+        }else{
+            cout<<"El bloque leido esta corrupto"<<endl;
+
+        }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1503,7 +1790,7 @@ void conIndvBlo(BloqueCarpeta inos,int i,vector <char *> * lista, int posm){
     char*gene="\"node";
     (*lista).push_back(gene);
     (*lista).push_back(intToCharP(i));
-    gene="\" [label = \"{{Inodo_";
+    gene="\" [label = \"{{Bloque_";
     (*lista).push_back(gene);
     (*lista).push_back(intToCharP(posm));
     gene=" |{{Nombre:| b_name0 | b_inodo0 | b_name1 | b_inodo1| b_name2 | b_inodo2| b_name3 | b_inodo3}|{Valor:|";
@@ -1511,28 +1798,56 @@ void conIndvBlo(BloqueCarpeta inos,int i,vector <char *> * lista, int posm){
 
     cout<<"nombre:"<<(inos.b_content[0].b_name)<<endl;
 
-    (*lista).push_back(componeC(inos.b_content[0].b_name));
+    (*lista).push_back((ArrtoCharP(inos.b_content[0].b_name)));
     (*lista).push_back("|");
     (*lista).push_back(intToCharP(inos.b_content[0].b_inodo));
 
-    (*lista).push_back(componeC(inos.b_content[1].b_name));
+    (*lista).push_back("|");
+    (*lista).push_back(ArrtoCharP(inos.b_content[1].b_name));
     (*lista).push_back("|");
     (*lista).push_back(intToCharP(inos.b_content[1].b_inodo));
 
-    (*lista).push_back(componeC(inos.b_content[2].b_name));
+    (*lista).push_back("|");
+    (*lista).push_back(ArrtoCharP(inos.b_content[2].b_name));
     (*lista).push_back("|");
     (*lista).push_back(intToCharP(inos.b_content[2].b_inodo));
 
-    (*lista).push_back(componeC(inos.b_content[3].b_name));
+    (*lista).push_back("|");
+    (*lista).push_back(ArrtoCharP(inos.b_content[3].b_name));
     (*lista).push_back("|");
     (*lista).push_back(intToCharP(inos.b_content[3].b_inodo));
 
 
     (*lista).push_back("}}}}\"shape = \"record\"];\n");
 
+
 }
 
 
+
+
+
+void conIndvBloIndirec(BloqueApuntador inos,int i,vector <char *> * lista, int posm){
+
+    char*gene="\"node";
+    (*lista).push_back(gene);
+    (*lista).push_back(intToCharP(i));
+    gene="\" [label = \"{{BIndirecto_";
+    (*lista).push_back(gene);
+    (*lista).push_back(intToCharP(posm));
+    gene=" |{{Nombre:| p0 | p1 | p2 | p3| p4 | p5 | p6 | p7 | p8 | p9 | p10 | p11 | p12 | p13 | p14 | p15 }|{Valor:|";
+    (*lista).push_back(gene);
+
+    for(int j=0;j<16;j++){
+        if(j!=0){
+            (*lista).push_back("|");
+        }
+        (*lista).push_back(intToCharP(inos.b_pointers[j]));
+    }
+
+    (*lista).push_back("}}}}\"shape = \"record\"];\n");
+
+}
 
 
 

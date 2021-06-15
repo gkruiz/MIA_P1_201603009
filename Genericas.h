@@ -25,7 +25,7 @@ char* componeC(char*cad){
 
 	if(cad!=0){
         while(i!=12){
-            if(cad[i]>47&&cad[i]<126){
+            if(cad[i]>47&&cad[i]<122){
                 nue[j]=cad[i];
                 j++;
             }

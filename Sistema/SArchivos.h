@@ -233,16 +233,18 @@ void Formateo(char *nomarchivo,int N ,PARTITION particion,MBR tempoMBR,int tipof
     carpeta.b_content[0]=info;
 
     ///Apuntador inodo Origen:
+    Content info1;
     text="/";
-    strcpy(info.b_name, text);
-    info.b_inodo=superBloque.s_inode_start;
-    carpeta.b_content[1]=info;
+    strcpy(info1.b_name, text);
+    info1.b_inodo=superBloque.s_inode_start;
+    carpeta.b_content[1]=info1;
 
     ///Apuntador inodo hijo:
+    Content info2;
     text="users.txt";
-    strcpy(info.b_name, text);
-    info.b_inodo=superBloque.s_inode_start+sizeof(inodo);
-    carpeta.b_content[2]=info;
+    strcpy(info2.b_name, text);
+    info2.b_inodo=superBloque.s_inode_start+sizeof(inodo);
+    carpeta.b_content[2]=info2;
 
     ///informacion a guardar
     char * informacion="1,G,root$1,U,root,root,123$                                    ";
@@ -443,7 +445,7 @@ MBR tempoMBR;
 PARTITION pmontar;
 
         char *nomarchivo=RPfd(infoP.path);
-        ifstream input_file(nomarchivo, ios::binary);
+        ifstream input_file(nomarchivo, ios::in);
         //Obtiene el MBR
         if(input_file){
             ///validar que exista el archivo
