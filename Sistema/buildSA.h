@@ -820,11 +820,12 @@ int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo){
                     }
                 }
 
-            }else{
+            }
+
+            if(retorna==-1){
                 retorna=ino.i_block[13];
                 (*tipo)=4;
                 break;
-
             }
         }
     }
