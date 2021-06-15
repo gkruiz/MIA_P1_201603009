@@ -9,7 +9,7 @@ mkfs -type=full -id=091a
 login -usr=root -pwd=123 -id=091a
 
 mkdir -p -path=/a/user
-
+pause
 mkdir -p -path=/b/maa
 mkdir -p -path=/c/desktop
 mkdir -p -path=/d/mbb
@@ -39,45 +39,6 @@ mkdir -p -path=/nx/desktop
 mkdir -p -path=/ox/mee
 mkdir -p -path=/px/desktop
 mkdir -p -path=/qx/mff
-
-
-mkdir -p -path=/axy/maa
-mkdir -p -path=/bxy/desktop
-mkdir -p -path=/cxy/mbb
-mkdir -p -path=/dxy/desktop
-mkdir -p -path=/fxy/mcc
-mkdir -p -path=/gxy/desktop
-mkdir -p -path=/hxy/mdd
-mkdir -p -path=/ixy/desktop
-mkdir -p -path=/jxy/mee
-mkdir -p -path=/kxy/desktop
-mkdir -p -path=/lxy/mff
-mkdir -p -path=/mxy/mdd
-mkdir -p -path=/nxy/desktop
-mkdir -p -path=/oxy/mee
-mkdir -p -path=/oxy/desktop
-mkdir -p -path=/qxy/mff
-
-
-
-mkdir -p -path=/axyz/maa
-mkdir -p -path=/bxyz/desktop
-mkdir -p -path=/cxyz/mbb
-mkdir -p -path=/dxyz/desktop
-mkdir -p -path=/fxyz/mcc
-mkdir -p -path=/gxyz/desktop
-mkdir -p -path=/hxyz/mdd
-mkdir -p -path=/ixyz/desktop
-mkdir -p -path=/jxyz/mee
-mkdir -p -path=/kxyz/desktop
-mkdir -p -path=/lxyz/mff
-mkdir -p -path=/mxyz/mdd
-mkdir -p -path=/nxyz/desktop
-mkdir -p -path=/oxyz/mee
-mkdir -p -path=/oxyz/desktop
-mkdir -p -path=/qxyz/mff
-
-
 
 
 

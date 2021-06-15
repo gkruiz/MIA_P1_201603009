@@ -765,10 +765,11 @@ int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo){
             cout<<"El bloque esta corrupto"<<endl;
         }
     }
-
+    bool todosllenos=true;
     ///seguiria analizando las otras posiciones a 15*
     if(retorna==-1){
-        for(int i=0;i<15;i++){
+        for(int i=0;i<12;i++){
+            todosllenos=todosllenos&&(ino.i_block[i]!=0);
             if(ino.i_block[i]==0){
                 retorna=i;
                 (*tipo)=2;
@@ -874,6 +875,24 @@ int busApuLibreInodo(ifstream &input_file , inodo ino , int desp,char * tipo){
         }
     }
 
+
+    if((retorna==-1)&&ino.i_block[12]==0&&todosllenos){
+        retorna=12;
+        (*tipo)=2;
+
+    }
+
+    if((retorna==-1)&&ino.i_block[13]==0&&todosllenos){
+        retorna=13;
+        (*tipo)=2;
+
+    }
+
+    if((retorna==-1)&&ino.i_block[14]==0&&todosllenos){
+        retorna=14;
+        (*tipo)=2;
+
+    }
 
  return retorna;
 
@@ -1542,6 +1561,12 @@ void recorridoInodoRep(ifstream &archivo ,int direccion, int dezpla , vector <ch
                     int posiciont=dezpla+temp.i_block[12] ;
                     cout<<"Salta DIRINODO ABS 12:"<<direccion<<endl;
                     cout<<"Salta DIRIndire ABS 12:"<<posiciont<<endl;
+
+                    (*lista).push_back(" node");
+                    (*lista).push_back(intToCharP(direccion));
+                    (*lista).push_back("->node");
+                    (*lista).push_back(intToCharP(posiciont));
+                    (*lista).push_back(" ");
                     recorridoBloqueIndirectoRep(archivo, posiciont ,dezpla,lista);
                 }
 
@@ -1562,6 +1587,11 @@ void recorridoInodoRep(ifstream &archivo ,int direccion, int dezpla , vector <ch
                             int posiciont=dezpla+tempx.b_pointers[i] ;
                             cout<<"Salta DIRINODO ABS 13:"<<direccion<<endl;
                             cout<<"Salta DIRIndire ABS 13:"<<posiciont<<endl;
+                            (*lista).push_back(" node");
+                            (*lista).push_back(intToCharP(direccion));
+                            (*lista).push_back("->node");
+                            (*lista).push_back(intToCharP(posiciont));
+                            (*lista).push_back(" ");
                             recorridoBloqueIndirectoRep(archivo, posiciont ,dezpla,lista);
 
 
@@ -1595,6 +1625,11 @@ void recorridoInodoRep(ifstream &archivo ,int direccion, int dezpla , vector <ch
                                     int posiciont=dezpla+tempx2.b_pointers[j] ;
                                     cout<<"Salta DIRINODO ABS 14:"<<direccion<<endl;
                                     cout<<"Salta DIRIndire ABS 14:"<<posiciont<<endl;
+                                    (*lista).push_back(" node");
+                                    (*lista).push_back(intToCharP(direccion));
+                                    (*lista).push_back("->node");
+                                    (*lista).push_back(intToCharP(posiciont));
+                                    (*lista).push_back(" ");
                                     recorridoBloqueIndirectoRep(archivo, posiciont ,dezpla,lista);
 
                                 }
@@ -1640,7 +1675,7 @@ void recorridoBloqueIndirectoRep(ifstream &archivo ,int direccion, int dezpla , 
         ///inicia a ver si conincide el nombre y la ruta
         for(int i=0;i<16;i++){
 
-            if(temp.b_pointers[i]!=0){
+            if(temp.b_pointers[i]!=0&&temp.b_pointers[i]!=-1){
 
                 int posiciont=dezpla+temp.b_pointers[i] ;
                 cout<<"DIR INDI ABS:"<<direccion<<endl;
